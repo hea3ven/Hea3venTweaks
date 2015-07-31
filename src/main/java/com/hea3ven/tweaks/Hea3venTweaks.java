@@ -21,7 +21,20 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 					new String[] {"15w31a", "d"})
 			.addField("net.minecraft.entity.item.EntityBoat", "isCollidedHorizontally", "Z",
 					new String[] {"15w31a", "D"})
+			.addClass("net.minecraft.world.World", new String[] {"1.7.10", "ahb", "15w31a", "aen"})
+			.addClass("net.minecraft.util.BlockPos", new String[] {"15w31a", "cj"})
+			.addClass("net.minecraft.util.AxisAlignedBB",
+					new String[] {"1.7.10", "azt", "15w31a", "awf"})
+			.addClass("net.minecraft.block.state.IBlockState", new String[] {"15w31a", "anl"})
+			.addClass("net.minecraft.entity.Entity", new String[] {"1.7.10", "sa", "15w31a", "pr"})
+			.addClass("net.minecraft.entity.EntityLivingBase",
+					new String[] {"1.7.10", "sv", "15w31a", "qa"})
+			.addClass("net.minecraft.block.Block", new String[] {"1.7.10", "aji", "15w31a", "agj"})
+			.addMethod("net.minecraft.block.Block", "addCollisionBoxesToList", null,
+					new String[] {"1.7.10", "a", "15w31a", "a"})
+			.addClass("net.minecraft.block.BlockLeavesBase", new String[] {"15w31a", "alq"})
 			.addTweak("net.minecraft.entity.item.EntityBoat", "onUpdate", new PreventBoatBreak())
+			.addTweak("net.minecraft.block.BlockLeavesBase", new NonSolidLeaves())
 			.build();
 
 	@Override
