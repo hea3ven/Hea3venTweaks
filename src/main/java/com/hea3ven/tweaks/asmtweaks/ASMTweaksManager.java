@@ -106,12 +106,19 @@ public class ASMTweaksManager {
 					logger.info("detected that obfuscation is {}", obfuscated);
 					detectedObfuscation = true;
 				}
-				logger.info("applying tweak {} to {}({})",
-						clsEntry.getValue().getClass().getSimpleName(), name,
-						clsEntry.getKey().getName());
-				if (cls == null)
-					cls = readClass(basicClass);
-				clsEntry.getValue().handle(this, cls);
+				if (System.getProperty("asmtweaks.disable"
+						+ clsEntry.getValue().getClass().getSimpleName()) == null) {
+					logger.info("applying tweak {} to {}({})",
+							clsEntry.getValue().getClass().getSimpleName(), name,
+							clsEntry.getKey().getName());
+					if (cls == null)
+						cls = readClass(basicClass);
+					clsEntry.getValue().handle(this, cls);
+				} else {
+					logger.info("not applying disabled tweak {} to {}({})",
+							clsEntry.getValue().getClass().getSimpleName(), name,
+							clsEntry.getKey().getName());
+				}
 			}
 		}
 		for (Entry<ObfuscatedClass, HashMap<ObfuscatedMethod, ASMMethodTweak>> clsEntry : methodTweaks
@@ -150,10 +157,17 @@ public class ASMTweaksManager {
 						entry.getValue().getClass().getSimpleName());
 				throw new RuntimeException("failed patching a class");
 			}
-			logger.info("applying tweak ({}/{}) {} to method {}({})", i, clsTweaks.size(),
-					entry.getValue().getClass().getSimpleName(), entry.getKey().getIdentifier(),
-					entry.getKey().getName());
-			entry.getValue().handle(this, method);
+			if (System.getProperty(
+					"asmtweaks.disable" + entry.getValue().getClass().getSimpleName()) == null) {
+				logger.info("applying tweak ({}/{}) {} to method {}({})", i, clsTweaks.size(),
+						entry.getValue().getClass().getSimpleName(), entry.getKey().getIdentifier(),
+						entry.getKey().getName());
+				entry.getValue().handle(this, method);
+			} else {
+				logger.info("not applying disabled tweak ({}/{}) {} to method {}({})", i,
+						clsTweaks.size(), entry.getValue().getClass().getSimpleName(),
+						entry.getKey().getIdentifier(), entry.getKey().getName());
+			}
 			i++;
 		}
 		return cls;
