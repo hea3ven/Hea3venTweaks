@@ -7,11 +7,24 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
+import com.hea3ven.tweaks.asmtweaks.ASMTweaksManager;
+import com.hea3ven.tweaks.asmtweaks.ASMTweaksManagerBuilder;
+
 public class Hea3venTweaks implements ITweaker, IClassTransformer {
+
+	private static ASMTweaksManager asmTweaksManager = new ASMTweaksManagerBuilder("15w31a")
+			.addClass("net.minecraft.entity.item.EntityBoat", new String[] {"15w31a", "vk"})
+			.addMethod("net.minecraft.entity.item.EntityBoat", "onUpdate", "()V",
+					new String[] {"15w31a", "t_"})
+			.addTweak("net.minecraft.entity.item.EntityBoat", "onUpdate", new PreventBoatBreak())
+			.build();
 
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] basicClass) {
-		throw new RuntimeException("Success");
+		if (name.startsWith("com.hea3ven.tweaks"))
+			return basicClass;
+
+		return asmTweaksManager.handle(name, transformedName, basicClass);
 	}
 
 	@Override
