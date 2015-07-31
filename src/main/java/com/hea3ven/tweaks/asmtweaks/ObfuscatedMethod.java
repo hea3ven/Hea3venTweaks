@@ -21,4 +21,10 @@ public class ObfuscatedMethod extends Obfuscation {
 	public String getDesc() {
 		return desc;
 	}
+
+	public boolean matches(String owner, String name, String desc2) {
+		return name.equals(getIdentifier()) && owner.equals(this.owner.getIdentifier())
+				&& desc.equals(this.desc);
+
+	}
 }

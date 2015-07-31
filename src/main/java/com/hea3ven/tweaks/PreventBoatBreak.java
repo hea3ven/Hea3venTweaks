@@ -1,15 +1,83 @@
 package com.hea3ven.tweaks;
 
+import java.util.Iterator;
+
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
-import com.hea3ven.tweaks.asmtweaks.ASMTweak;
+import com.hea3ven.tweaks.asmtweaks.ASMMethodTweak;
 import com.hea3ven.tweaks.asmtweaks.ASMTweaksManager;
+import com.hea3ven.tweaks.asmtweaks.ObfuscatedField;
+import com.hea3ven.tweaks.asmtweaks.ObfuscatedMethod;
 
-public class PreventBoatBreak implements ASMTweak {
+public class PreventBoatBreak implements ASMMethodTweak {
 
 	@Override
 	public void handle(ASMTweaksManager mgr, MethodNode method) {
-		// TODO Auto-generated method stub
+
+		// Replace
+		//
+		// this.moveEntity(this.motionX, this.motionY, this.motionZ);
+		// if (this.isCollidedHorizontally && d9 > 0.2D) {
+		//     // ...
+		// }
+		// else
+		// {
+		//     // ...
+		// }
+		//
+		// To
+		//
+		// this.moveEntity(this.motionX, this.motionY, this.motionZ);
+		// if (!this.isCollidedHorizontally && this.isCollidedHorizontally && d9 > 0.2D) {
+		//     // ...
+		// }
+		// else
+		// {
+		//     // ...
+		// }
+
+		ObfuscatedMethod moveEntityMethod = mgr
+				.getMethod(mgr.getClass("net.minecraft.entity.item.EntityBoat"), "moveEntity");
+		ObfuscatedField collHorizAttr = mgr.getField(
+				mgr.getClass("net.minecraft.entity.item.EntityBoat"), "isCollidedHorizontally");
+
+		Iterator<AbstractInsnNode> iter = method.instructions.iterator();
+
+		int startIndex = 0;
+		while (iter.hasNext()) {
+			AbstractInsnNode currentNode = iter.next();
+
+			if (currentNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+				MethodInsnNode methodInsnNode = (MethodInsnNode) currentNode;
+				if (moveEntityMethod.matches(methodInsnNode.owner, methodInsnNode.name,
+						methodInsnNode.desc)) {
+					startIndex = method.instructions.indexOf(currentNode) + 1;
+				}
+			}
+		}
+		if (startIndex == 0)
+			mgr.error("could not find patch position");
+
+		AbstractInsnNode jumpNode = method.instructions.get(startIndex + 4);
+		if (jumpNode.getOpcode() != Opcodes.IFEQ)
+			mgr.error("unexpected asm " + jumpNode.getOpcode());
+
+		LabelNode elseLbl = ((JumpInsnNode) jumpNode).label;
+
+		method.instructions.insert(method.instructions.get(startIndex + 0),
+				new VarInsnNode(Opcodes.ALOAD, 0));
+		method.instructions.insert(method.instructions.get(startIndex + 1),
+				new FieldInsnNode(Opcodes.GETFIELD, collHorizAttr.getOwner().getIdentifier(),
+						collHorizAttr.getIdentifier(), collHorizAttr.getDesc()));
+		method.instructions.insert(method.instructions.get(startIndex + 2),
+				new JumpInsnNode(Opcodes.IFNE, elseLbl));
 	}
 
 }

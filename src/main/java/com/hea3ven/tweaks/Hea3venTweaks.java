@@ -16,6 +16,11 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 			.addClass("net.minecraft.entity.item.EntityBoat", new String[] {"15w31a", "vk"})
 			.addMethod("net.minecraft.entity.item.EntityBoat", "onUpdate", "()V",
 					new String[] {"15w31a", "t_"})
+			.addClass("net.minecraft.entity.Entity", new String[] {"15w31a", "pr"})
+			.addMethod("net.minecraft.entity.item.EntityBoat", "moveEntity", "(DDD)V",
+					new String[] {"15w31a", "d"})
+			.addField("net.minecraft.entity.item.EntityBoat", "isCollidedHorizontally", "Z",
+					new String[] {"15w31a", "D"})
 			.addTweak("net.minecraft.entity.item.EntityBoat", "onUpdate", new PreventBoatBreak())
 			.build();
 

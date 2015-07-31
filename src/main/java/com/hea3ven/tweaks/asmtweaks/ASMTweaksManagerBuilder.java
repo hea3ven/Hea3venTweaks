@@ -18,12 +18,30 @@ public class ASMTweaksManagerBuilder {
 
 	public ASMTweaksManagerBuilder addMethod(String className, String name, String desc,
 			String[] obfNamesDesc) {
-		mgr.add(new ObfuscatedMethod(mgr, mgr.getClass(className), name, desc,
-				convertObfNamesDesc(obfNamesDesc)));
+		ObfuscatedClass cls = mgr.getClass(className);
+		if (cls == null)
+			throw new RuntimeException("could not find class " + className);
+		mgr.add(new ObfuscatedMethod(mgr, cls, name, desc, convertObfNamesDesc(obfNamesDesc)));
 		return this;
 	}
 
-	public ASMTweaksManagerBuilder addTweak(String className, String methodName, ASMTweak tweak) {
+	public ASMTweaksManagerBuilder addField(String className, String name, String desc,
+			String[] obfNamesDesc) {
+		ObfuscatedClass cls = mgr.getClass(className);
+		if (cls == null)
+			throw new RuntimeException("could not find class " + className);
+		mgr.add(new ObfuscatedField(mgr, cls, name, desc, convertObfNamesDesc(obfNamesDesc)));
+		return this;
+	}
+
+	public ASMTweaksManagerBuilder addTweak(String className, ASMClassTweak tweak) {
+		ObfuscatedClass cls = mgr.getClass(className);
+		mgr.addTweak(cls, tweak);
+		return this;
+	}
+
+	public ASMTweaksManagerBuilder addTweak(String className, String methodName,
+			ASMMethodTweak tweak) {
 		ObfuscatedClass cls = mgr.getClass(className);
 		mgr.addTweak(cls, mgr.getMethod(cls, methodName), tweak);
 		return this;
