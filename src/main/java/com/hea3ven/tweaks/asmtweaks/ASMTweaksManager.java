@@ -6,8 +6,6 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -110,7 +108,7 @@ public class ASMTweaksManager {
 							clsEntry.getValue().getClass().getSimpleName(), name,
 							clsEntry.getKey().getName());
 					if (cls == null)
-						cls = readClass(basicClass);
+						cls = ASMUtils.readClass(basicClass);
 					clsEntry.getValue().handle(this, cls);
 				} else {
 					logger.info("not applying disabled tweak {} to {}({})",
@@ -129,12 +127,12 @@ public class ASMTweaksManager {
 				}
 				logger.info("applying patches to {}({})", name, clsEntry.getKey().getName());
 				if (cls == null)
-					cls = readClass(basicClass);
+					cls = ASMUtils.readClass(basicClass);
 				cls = handle(clsEntry.getValue(), cls);
 			}
 		}
 		if (cls != null)
-			return writeClass(cls);
+			return ASMUtils.writeClass(cls);
 		else
 			return basicClass;
 	}
@@ -169,18 +167,5 @@ public class ASMTweaksManager {
 			i++;
 		}
 		return cls;
-	}
-
-	private ClassNode readClass(byte[] basicClass) {
-		ClassNode classNode = new ClassNode();
-		ClassReader classReader = new ClassReader(basicClass);
-		classReader.accept(classNode, 0);
-		return classNode;
-	}
-
-	private byte[] writeClass(ClassNode classNode) {
-		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		classNode.accept(writer);
-		return writer.toByteArray();
 	}
 }
