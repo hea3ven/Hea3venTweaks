@@ -13,6 +13,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 
 import com.hea3ven.tweaks.asmtweaks.ASMMethodTweak;
 import com.hea3ven.tweaks.asmtweaks.ASMTweaksManager;
+import com.hea3ven.tweaks.asmtweaks.ObfuscatedClass;
 import com.hea3ven.tweaks.asmtweaks.ObfuscatedField;
 import com.hea3ven.tweaks.asmtweaks.ObfuscatedMethod;
 
@@ -43,10 +44,11 @@ public class PreventBoatBreak implements ASMMethodTweak {
 		//     // ...
 		// }
 
-		ObfuscatedMethod moveEntityMethod = mgr
-				.getMethod(mgr.getClass("net.minecraft.entity.item.EntityBoat"), "moveEntity");
-		ObfuscatedField collHorizAttr = mgr.getField(
-				mgr.getClass("net.minecraft.entity.item.EntityBoat"), "isCollidedHorizontally");
+		ObfuscatedMethod moveEntityMethod = mgr.getMethod("net.minecraft.entity.Entity.moveEntity");
+		ObfuscatedField collHorizAttr = mgr
+				.getField("net.minecraft.entity.Entity.isCollidedHorizontally");
+		ObfuscatedClass entityClass = mgr.getClass("net.minecraft.entity.Entity");
+		ObfuscatedClass boatClass = mgr.getClass("net.minecraft.entity.item.EntityBoat");
 
 		Iterator<AbstractInsnNode> iter = method.instructions.iterator();
 
@@ -56,8 +58,8 @@ public class PreventBoatBreak implements ASMMethodTweak {
 
 			if (currentNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
 				MethodInsnNode methodInsnNode = (MethodInsnNode) currentNode;
-				if (moveEntityMethod.matches(methodInsnNode.owner, methodInsnNode.name,
-						methodInsnNode.desc)) {
+				if (boatClass.getIdentifier().equals(methodInsnNode.owner)
+						&& moveEntityMethod.matches(methodInsnNode.name, methodInsnNode.desc)) {
 					startIndex = method.instructions.indexOf(currentNode) + 1;
 				}
 			}
@@ -74,7 +76,7 @@ public class PreventBoatBreak implements ASMMethodTweak {
 		method.instructions.insert(method.instructions.get(startIndex + 0),
 				new VarInsnNode(Opcodes.ALOAD, 0));
 		method.instructions.insert(method.instructions.get(startIndex + 1),
-				new FieldInsnNode(Opcodes.GETFIELD, collHorizAttr.getOwner().getIdentifier(),
+				new FieldInsnNode(Opcodes.GETFIELD, entityClass.getIdentifier(),
 						collHorizAttr.getIdentifier(), collHorizAttr.getDesc()));
 		method.instructions.insert(method.instructions.get(startIndex + 2),
 				new JumpInsnNode(Opcodes.IFNE, elseLbl));

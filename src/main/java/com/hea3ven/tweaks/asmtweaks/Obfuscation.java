@@ -1,14 +1,13 @@
 package com.hea3ven.tweaks.asmtweaks;
 
-import java.util.HashMap;
-
 class Obfuscation {
 
-	private ASMTweaksManager mgr;
-	private String name;
-	private HashMap<String, String> obfNames;
+	protected ASMTweaksManager mgr;
 
-	public Obfuscation(ASMTweaksManager mgr, String name, HashMap<String, String> obfNames) {
+	private String name;
+	private VersionMapping obfNames;
+
+	public Obfuscation(ASMTweaksManager mgr, String name, VersionMapping obfNames) {
 		this.mgr = mgr;
 		this.name = name;
 		this.obfNames = obfNames;

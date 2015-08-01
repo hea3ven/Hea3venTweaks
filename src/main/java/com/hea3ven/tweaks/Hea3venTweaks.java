@@ -12,28 +12,66 @@ import com.hea3ven.tweaks.asmtweaks.ASMTweaksManagerBuilder;
 
 public class Hea3venTweaks implements ITweaker, IClassTransformer {
 
-	private static ASMTweaksManager asmTweaksManager = new ASMTweaksManagerBuilder("15w31a")
-			.addClass("net.minecraft.entity.item.EntityBoat", new String[] {"15w31a", "vk"})
-			.addMethod("net.minecraft.entity.item.EntityBoat", "onUpdate", "()V",
-					new String[] {"15w31a", "t_"})
-			.addClass("net.minecraft.entity.Entity", new String[] {"15w31a", "pr"})
-			.addMethod("net.minecraft.entity.item.EntityBoat", "moveEntity", "(DDD)V",
-					new String[] {"15w31a", "d"})
-			.addField("net.minecraft.entity.item.EntityBoat", "isCollidedHorizontally", "Z",
-					new String[] {"15w31a", "D"})
-			.addClass("net.minecraft.world.World", new String[] {"1.7.10", "ahb", "15w31a", "aen"})
-			.addClass("net.minecraft.util.BlockPos", new String[] {"15w31a", "cj"})
-			.addClass("net.minecraft.util.AxisAlignedBB",
-					new String[] {"1.7.10", "azt", "15w31a", "awf"})
-			.addClass("net.minecraft.block.state.IBlockState", new String[] {"15w31a", "anl"})
-			.addClass("net.minecraft.entity.Entity", new String[] {"1.7.10", "sa", "15w31a", "pr"})
-			.addClass("net.minecraft.entity.EntityLivingBase",
-					new String[] {"1.7.10", "sv", "15w31a", "qa"})
-			.addClass("net.minecraft.block.Block", new String[] {"1.7.10", "aji", "15w31a", "agj"})
-			.addMethod("net.minecraft.block.Block", "addCollisionBoxesToList", null,
-					new String[] {"1.7.10", "a", "15w31a", "a"})
-			.addClass("net.minecraft.block.BlockLeavesBase", new String[] {"15w31a", "alq"})
-			.addTweak("net.minecraft.entity.item.EntityBoat", "onUpdate", new PreventBoatBreak())
+	private static ASMTweaksManager asmTweaksManager = new ASMTweaksManagerBuilder("15w31c")
+			.startClass("net.minecraft.entity.Entity")
+			.withMapping("15w31[abc]", "pr")
+			.startMethod("onUpdate")
+			.withMapping("15w31[abc]", "t_")
+			.withDesc(".*", "()V")
+			.endMethod()
+			.startMethod("moveEntity")
+			.withMapping("15w31[abc]", "d")
+			.withDesc(".*", "(DDD)V")
+			.endMethod()
+			.startField("isCollidedHorizontally", "Z")
+			.withMapping("15w31[abc]", "D")
+			.endField()
+			.endClass()
+			.startClass("net.minecraft.entity.item.EntityBoat")
+			.withMapping("15w31[abc]", "vk")
+			.endClass()
+			.startClass("net.minecraft.world.World")
+			.withMapping("1.7.10", "ahb")
+			.withMapping("15w31[ab]", "aen")
+			.withMapping("15w31c", "aeo")
+			.endClass()
+			.startClass("net.minecraft.util.BlockPos")
+			.withMapping("15w31[abc]", "cj")
+			.endClass()
+			.startClass("net.minecraft.util.AxisAlignedBB")
+			.withMapping("1.7.10", "azt")
+			.withMapping("15w31[ab]", "awf")
+			.withMapping("15w31c", "awg")
+			.endClass()
+			.startClass("net.minecraft.block.state.IBlockState")
+			.withMapping("15w31[ab]", "anl")
+			.withMapping("15w31c", "anm")
+			.endClass()
+			.startClass("net.minecraft.entity.EntityLivingBase")
+			.withMapping("1.7.10", "sv")
+			.withMapping("15w31[abc]", "qa")
+			.endClass()
+			.startClass("net.minecraft.block.Block")
+			.withMapping("1.7.10", "aji")
+			.withMapping("15w31[ab]", "agj")
+			.withMapping("15w31c", "agk")
+			.startMethod("addCollisionBoxesToList")
+			.withMapping("1.7.10", "a")
+			.withMapping("15w31[abc]", "a")
+			.withDesc("1.7.10", "(Lnet.minecraft.world.World;IIILnet.minecraft.util.AxisAlignedBB;"
+					+ "Ljava/util/List;Lnet.minecraft.entity.Entity;)V")
+			.withDesc("15w31[abc]",
+					"(Lnet.minecraft.world.World;Lnet.minecraft.util.BlockPos;"
+							+ "Lnet.minecraft.block.state.IBlockState;"
+							+ "Lnet.minecraft.util.AxisAlignedBB;"
+							+ "Ljava/util/List;Lnet.minecraft.entity.Entity;)V")
+			.endMethod()
+			.endClass()
+			.startClass("net.minecraft.block.BlockLeavesBase")
+			.withMapping("15w31[ab]", "alq")
+			.withMapping("15w31c", "alr")
+			.endClass()
+			.addTweak("net.minecraft.entity.item.EntityBoat", "net.minecraft.entity.Entity.onUpdate", new PreventBoatBreak())
 			.addTweak("net.minecraft.block.BlockLeavesBase", new NonSolidLeaves())
 			.build();
 

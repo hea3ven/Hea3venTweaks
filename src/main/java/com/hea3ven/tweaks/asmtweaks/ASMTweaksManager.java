@@ -61,20 +61,18 @@ public class ASMTweaksManager {
 		return null;
 	}
 
-	public ObfuscatedMethod getMethod(ObfuscatedClass cls, String methodName) {
+	public ObfuscatedMethod getMethod(String methodName) {
 		for (ObfuscatedMethod method : methods) {
-			if (method.getOwner() == cls && (methodName.equals(method.getName())
-					|| methodName.equals(method.getObfName()))) {
+			if (methodName.equals(method.getName()) || methodName.equals(method.getObfName())) {
 				return method;
 			}
 		}
 		return null;
 	}
 
-	public ObfuscatedField getField(ObfuscatedClass cls, String fieldName) {
+	public ObfuscatedField getField(String fieldName) {
 		for (ObfuscatedField field : fields) {
-			if (field.getOwner() == cls && (fieldName.equals(field.getName())
-					|| fieldName.equals(field.getObfName()))) {
+			if (fieldName.equals(field.getName()) || fieldName.equals(field.getObfName())) {
 				return field;
 			}
 		}

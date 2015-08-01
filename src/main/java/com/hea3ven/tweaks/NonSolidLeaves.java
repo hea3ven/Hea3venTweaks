@@ -23,9 +23,9 @@ public class NonSolidLeaves implements ASMClassTweak {
 				+ mgr.getClass("net.minecraft.util.AxisAlignedBB").getPath() + ";Ljava/util/List;L"
 				+ mgr.getClass("net.minecraft.entity.Entity").getPath() + ";)V";
 
-		MethodNode method = new MethodNode(Opcodes.ASM4, Opcodes.ACC_PUBLIC, mgr
-				.getMethod(mgr.getClass("net.minecraft.block.Block"), "addCollisionBoxesToList")
-				.getIdentifier(), desc, null, null);
+		MethodNode method = new MethodNode(Opcodes.ASM4, Opcodes.ACC_PUBLIC,
+				mgr.getMethod("net.minecraft.block.Block.addCollisionBoxesToList").getIdentifier(),
+				desc, null, null);
 
 		LabelNode lbl1 = new LabelNode();
 
@@ -42,10 +42,8 @@ public class NonSolidLeaves implements ASMClassTweak {
 		method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 5));
 		method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 6));
 		method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
-				mgr.getClass("net.minecraft.block.Block").getIdentifier(), mgr
-						.getMethod(mgr.getClass("net.minecraft.block.Block"),
-								"addCollisionBoxesToList")
-						.getIdentifier(),
+				mgr.getClass("net.minecraft.block.Block").getIdentifier(),
+				mgr.getMethod("net.minecraft.block.Block.addCollisionBoxesToList").getIdentifier(),
 				desc, false));
 
 		method.instructions.add(lbl1);

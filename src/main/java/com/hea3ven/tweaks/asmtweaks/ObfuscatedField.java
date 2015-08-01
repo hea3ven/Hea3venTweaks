@@ -7,8 +7,8 @@ public class ObfuscatedField extends Obfuscation {
 	private ObfuscatedClass owner;
 	private String desc;
 
-	public ObfuscatedField(ASMTweaksManager mgr, ObfuscatedClass owner, String name, String desc,
-			HashMap<String, String> obfNames) {
+	public ObfuscatedField(ASMTweaksManager mgr, String name,
+			VersionMapping obfNames, String desc) {
 		super(mgr, name, obfNames);
 		this.owner = owner;
 		this.desc = desc;
