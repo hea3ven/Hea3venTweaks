@@ -25,54 +25,70 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 			discoverVersion())
 					.startClass("net.minecraft.entity.Entity")
 					.withMapping("1.7.10", "sa")
+					.withMapping("1.8", "wv")
 					.withMapping("15w31[abc]", "pr")
 					.startMethod("onUpdate")
+					.withMapping("1.7.10", "h")
+					.withMapping("1.8", "s_")
 					.withMapping("15w31[abc]", "t_")
 					.withDesc(".*", "()V")
 					.endMethod()
 					.startMethod("moveEntity")
+					.withMapping("1.7.10", "d")
+					.withMapping("1.8", "d")
 					.withMapping("15w31[abc]", "d")
 					.withDesc(".*", "(DDD)V")
 					.endMethod()
 					.startField("isCollidedHorizontally", "Z")
+					.withMapping("1.7.10", "E")
+					.withMapping("1.8", "D")
 					.withMapping("15w31[abc]", "D")
 					.endField()
 					.endClass()
 					.startClass("net.minecraft.entity.item.EntityBoat")
+					.withMapping("1.7.10", "xi")
+					.withMapping("1.8", "adu")
 					.withMapping("15w31[abc]", "vk")
 					.endClass()
 					.startClass("net.minecraft.world.World")
 					.withMapping("1.7.10", "ahb")
+					.withMapping("1.8", "aqu")
 					.withMapping("15w31[ab]", "aen")
 					.withMapping("15w31c", "aeo")
 					.endClass()
 					.startClass("net.minecraft.util.BlockPos")
+					.withMapping("1.8", "dt")
 					.withMapping("15w31[abc]", "cj")
 					.endClass()
 					.startClass("net.minecraft.util.AxisAlignedBB")
 					.withMapping("1.7.10", "azt")
+					.withMapping("1.8", "brt")
 					.withMapping("15w31[ab]", "awf")
 					.withMapping("15w31c", "awg")
 					.endClass()
 					.startClass("net.minecraft.block.state.IBlockState")
+					.withMapping("1.8", "bec")
 					.withMapping("15w31[ab]", "anl")
 					.withMapping("15w31c", "anm")
 					.endClass()
 					.startClass("net.minecraft.entity.EntityLivingBase")
 					.withMapping("1.7.10", "sv")
+					.withMapping("1.8", "xm")
 					.withMapping("15w31[abc]", "qa")
 					.endClass()
 					.startClass("net.minecraft.block.Block")
 					.withMapping("1.7.10", "aji")
+					.withMapping("1.8", "atr")
 					.withMapping("15w31[ab]", "agj")
 					.withMapping("15w31c", "agk")
 					.startMethod("addCollisionBoxesToList")
 					.withMapping("1.7.10", "a")
+					.withMapping("1.8", "a")
 					.withMapping("15w31[abc]", "a")
 					.withDesc("1.7.10",
 							"(Lnet.minecraft.world.World;IIILnet.minecraft.util.AxisAlignedBB;"
 									+ "Ljava/util/List;Lnet.minecraft.entity.Entity;)V")
-					.withDesc("15w31[abc]",
+					.withDesc("(1.8|15w31[abc])",
 							"(Lnet.minecraft.world.World;Lnet.minecraft.util.BlockPos;"
 									+ "Lnet.minecraft.block.state.IBlockState;"
 									+ "Lnet.minecraft.util.AxisAlignedBB;"
@@ -81,6 +97,7 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 					.endClass()
 					.startClass("net.minecraft.block.BlockLeavesBase")
 					.withMapping("1.7.10", "aod")
+					.withMapping("1.8", "bbo")
 					.withMapping("15w31[ab]", "alq")
 					.withMapping("15w31c", "alr")
 					.endClass()
@@ -139,7 +156,7 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 
 		public String version = null;
 
-		Pattern normalVer = Pattern.compile("^\\d+\\.\\d+\\.\\d+$");
+		Pattern normalVer = Pattern.compile("^\\d+\\.\\d+(\\.\\d+)?$");
 		Pattern snapVer = Pattern.compile("^\\d\\dw\\d+[a-z]$");
 
 		@Override
