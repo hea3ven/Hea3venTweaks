@@ -16,7 +16,15 @@ To disable add the following java parameter: -Dasmtweaks.disableNonSolidLeaves
 
 ### Versions and Installation
 
-Snapshot 15w31a/15w31b:
- * Requires [meddle](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2488387-meddle-minecraft-tweakclass-mod-loader-15w31a) by FyberOptic
- * Download [hea3ven-tweaks-15w31a-1.0.0.jar](http://www.mediafire.com/download/y5q6qlvdkc2lewd/hea3ven-tweaks-15w31a-1.0.0.jar) into the "meddle" folder created by meddle.
+Download: [hea3ven-tweaks-1.0.1.jar](http://www.mediafire.com/download/spt8g1c7j8uz8kv/hea3ven-tweaks-1.0.1.jar)
+
+Changelog: [Changelog](https://github.com/hea3ven/HardModeTweaks/blob/master/CHANGELOG)
+
+Snapshot 1.7.10/1.8:
+ * Requires [Forge](http://minecraftforge.net)
+ * Copy hea3ven-tweaks-1.0.1.jar into the "mods" folder created by Forge.
+
+Snapshot 15w31c:
+ * Requires [Meddle](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2488387-meddle-minecraft-tweakclass-mod-loader-15w31a)
+ * Copy hea3ven-tweaks-1.0.1.jar into the "meddle" folder created by Meddle.
 

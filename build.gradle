@@ -8,7 +8,7 @@ repositories {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
-version = "15w31a-1.0.0"
+version = "1.0.1"
 group = "com.hea3ven.tweaks"
 archivesBaseName = "hea3ven-tweaks"
 
