@@ -73,16 +73,8 @@ public class ASMTweaksManagerBuilder {
 		return this;
 	}
 
-	public ASMTweaksManagerBuilder addTweak(String className, ASMClassTweak tweak) {
-		ObfuscatedClass cls = mgr.getClass(className);
-		mgr.addTweak(cls, tweak);
-		return this;
-	}
-
-	public ASMTweaksManagerBuilder addTweak(String className, String methodName,
-			ASMMethodTweak tweak) {
-		ObfuscatedClass cls = mgr.getClass(className);
-		mgr.addTweak(cls, mgr.getMethod(methodName), tweak);
+	public ASMTweaksManagerBuilder addTweak(ASMTweak tweak) {
+		mgr.addTweak(tweak);
 		return this;
 	}
 

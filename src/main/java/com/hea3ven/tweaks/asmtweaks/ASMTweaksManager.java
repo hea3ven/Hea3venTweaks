@@ -1,8 +1,8 @@
 package com.hea3ven.tweaks.asmtweaks;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
+
+import com.google.common.collect.Sets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,15 +17,18 @@ public class ASMTweaksManager {
 	private HashSet<ObfuscatedClass> classes = new HashSet<ObfuscatedClass>();
 	private HashSet<ObfuscatedMethod> methods = new HashSet<ObfuscatedMethod>();
 	private HashSet<ObfuscatedField> fields = new HashSet<ObfuscatedField>();
-	private HashMap<ObfuscatedClass, ASMClassTweak> classTweaks = new HashMap<ObfuscatedClass, ASMClassTweak>();
-	private HashMap<ObfuscatedClass, HashMap<ObfuscatedMethod, ASMMethodTweak>> methodTweaks = new HashMap<ObfuscatedClass, HashMap<ObfuscatedMethod, ASMMethodTweak>>();
 
 	private boolean detectedObfuscation = false;
 	private boolean obfuscated = false;
 
+	private ASMTweaksConfig config;
+
+	private HashSet<ASMTweak> tweaks = Sets.newHashSet();
+
 	public ASMTweaksManager(String currentVersion) {
 		logger.info("using mappings for version {}", currentVersion);
 		this.currentVersion = currentVersion;
+		config = new ASMTweaksConfig();
 	}
 
 	public String getCurrentVersion() {
@@ -77,95 +80,80 @@ public class ASMTweaksManager {
 		return null;
 	}
 
-	public void addTweak(ObfuscatedClass cls, ASMClassTweak tweak) {
-		if (classTweaks.containsKey(cls)) {
-			// TODO: Handle conflict of two tweaks modifying the same class
+	public void addTweak(ASMTweak tweak) {
+		if (config.isEnabled(tweak)) {
+			tweaks.add(tweak);
 		}
-		classTweaks.put(cls, tweak);
-	}
-
-	public void addTweak(ObfuscatedClass cls, ObfuscatedMethod method, ASMMethodTweak tweak) {
-		if (!methodTweaks.containsKey(cls))
-			methodTweaks.put(cls, new HashMap<ObfuscatedMethod, ASMMethodTweak>());
-		if (methodTweaks.get(cls).containsKey(method)) {
-			// TODO: Handle conflict of two tweaks modifying the same method
-		}
-		methodTweaks.get(cls).put(method, tweak);
 	}
 
 	public byte[] handle(String name, String transformedName, byte[] basicClass) {
-		ClassNode cls = null;
-		for (Entry<ObfuscatedClass, ASMClassTweak> clsEntry : classTweaks.entrySet()) {
-			if (clsEntry.getKey().matchesName(name)) {
+		ObfuscatedClass clsName = null;
+		for (ObfuscatedClass potentialClsName : classes) {
+			if (potentialClsName.matchesName(name)) {
 				if (!detectedObfuscation) {
-					obfuscated = name.equals(clsEntry.getKey().getObfName());
+					obfuscated = name.equals(potentialClsName.getObfName());
 					logger.info("detected that obfuscation is {}", obfuscated);
 					detectedObfuscation = true;
 				}
-				if (System.getProperty("asmtweaks.disable"
-						+ clsEntry.getValue().getClass().getSimpleName()) == null) {
-					logger.info("applying tweak {} to {}({})",
-							clsEntry.getValue().getClass().getSimpleName(), name,
-							clsEntry.getKey().getName());
-					if (cls == null)
-						cls = ASMUtils.readClass(basicClass);
-					clsEntry.getValue().handle(this, cls);
-				} else {
-					logger.info("not applying disabled tweak {} to {}({})",
-							clsEntry.getValue().getClass().getSimpleName(), name,
-							clsEntry.getKey().getName());
-				}
+				clsName = potentialClsName;
+				break;
 			}
+
 		}
-		for (Entry<ObfuscatedClass, HashMap<ObfuscatedMethod, ASMMethodTweak>> clsEntry : methodTweaks
-				.entrySet()) {
-			if (clsEntry.getKey().matchesName(name)) {
-				if (!detectedObfuscation) {
-					obfuscated = name.equals(clsEntry.getKey().getObfName());
-					logger.info("detected that obfuscation is {}", obfuscated);
-					detectedObfuscation = true;
-				}
-				logger.info("applying patches to {}({})", name, clsEntry.getKey().getName());
-				if (cls == null)
-					cls = ASMUtils.readClass(basicClass);
-				cls = handle(clsEntry.getValue(), cls);
-			}
-		}
-		if (cls != null)
-			return ASMUtils.writeClass(cls);
-		else
+		if (clsName == null)
 			return basicClass;
+
+		ClassNode cls = null;
+		for (ASMTweak tweak : tweaks) {
+			for (ASMMod mod : tweak.getModifications()) {
+				if (mod instanceof ASMClassMod) {
+					cls = handleClassMod(tweak, (ASMClassMod) mod, clsName, cls, basicClass);
+				} else if (mod instanceof ASMMethodMod) {
+					cls = handleMethodMod(tweak, (ASMMethodMod) mod, clsName, cls, basicClass);
+				}
+			}
+		}
+
+		if (cls != null) {
+			return ASMUtils.writeClass(cls);
+		} else
+			return basicClass;
+	}
+
+	private ClassNode handleClassMod(ASMTweak tweak, ASMClassMod mod, ObfuscatedClass clsName,
+			ClassNode cls, byte[] basicClass) {
+		if (clsName.matchesName(mod.getClassName())) {
+			if (cls == null)
+				cls = ASMUtils.readClass(basicClass);
+			logger.info("applying class modification from {} to {}({})", tweak.getName(),
+					clsName.getIdentifier(), clsName.getName());
+			mod.handle(this, cls);
+		}
+		return cls;
+
+	}
+
+	private ClassNode handleMethodMod(ASMTweak tweak, ASMMethodMod mod, ObfuscatedClass clsName,
+			ClassNode cls, byte[] basicClass) {
+		if (clsName.matchesName(mod.getClassName())) {
+			if (cls == null)
+				cls = ASMUtils.readClass(basicClass);
+			ObfuscatedMethod mthdName = getMethod(mod.getMethodName());
+			MethodNode mthd = ASMUtils.getMethod(cls, mthdName.getIdentifier(), mthdName.getDesc());
+			if (mthd == null) {
+				logger.error("could not find method {} {} for tweak {}", mthdName.getIdentifier(),
+						mthdName.getDesc(), tweak.getName());
+				throw new RuntimeException("failed patching a class");
+			}
+			logger.info("applying method modification from {} to {}({})", tweak.getName(),
+					mthdName.getIdentifier(), mthdName.getName());
+			mod.handle(this, mthd);
+		}
+		return cls;
 	}
 
 	public void error(String msg) {
 		logger.error(msg);
 		throw new RuntimeException("failed patching a class");
-	}
-
-	private ClassNode handle(HashMap<ObfuscatedMethod, ASMMethodTweak> clsTweaks, ClassNode cls) {
-		int i = 1;
-		for (Entry<ObfuscatedMethod, ASMMethodTweak> entry : clsTweaks.entrySet()) {
-			MethodNode method = ASMUtils.getMethod(cls, entry.getKey().getIdentifier(),
-					entry.getKey().getDesc());
-			if (method == null) {
-				logger.error("could not find method {} {} for tweak {}",
-						entry.getKey().getIdentifier(), entry.getKey().getDesc(),
-						entry.getValue().getClass().getSimpleName());
-				throw new RuntimeException("failed patching a class");
-			}
-			if (System.getProperty(
-					"asmtweaks.disable" + entry.getValue().getClass().getSimpleName()) == null) {
-				logger.info("applying tweak ({}/{}) {} to method {}({})", i, clsTweaks.size(),
-						entry.getValue().getClass().getSimpleName(), entry.getKey().getIdentifier(),
-						entry.getKey().getName());
-				entry.getValue().handle(this, method);
-			} else {
-				logger.info("not applying disabled tweak ({}/{}) {} to method {}({})", i,
-						clsTweaks.size(), entry.getValue().getClass().getSimpleName(),
-						entry.getKey().getIdentifier(), entry.getKey().getName());
-			}
-			i++;
-		}
-		return cls;
 	}
 }

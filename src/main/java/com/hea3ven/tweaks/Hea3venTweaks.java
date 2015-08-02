@@ -101,9 +101,8 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 					.withMapping("15w31[ab]", "alq")
 					.withMapping("15w31c", "alr")
 					.endClass()
-					.addTweak("net.minecraft.entity.item.EntityBoat",
-							"net.minecraft.entity.Entity.onUpdate", new PreventBoatBreak())
-					.addTweak("net.minecraft.block.BlockLeavesBase", new NonSolidLeaves())
+					.addTweak(new PreventBoatBreak())
+					.addTweak(new NonSolidLeaves())
 					.build();
 
 	private static String discoverVersion() {
