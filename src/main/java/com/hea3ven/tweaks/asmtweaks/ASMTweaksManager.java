@@ -82,11 +82,40 @@ public class ASMTweaksManager {
 
 	public void addTweak(ASMTweak tweak) {
 		if (config.isEnabled(tweak)) {
+			tweak.configure(config.getTweakConfig(tweak));
 			tweaks.add(tweak);
+			for (ASMMod mod : tweak.getModifications()) {
+				if (mod instanceof ASMClassMod) {
+					ASMClassMod clsMod = (ASMClassMod) mod;
+					if (getClass(clsMod.getClassName()) == null) {
+						VersionMapping obfNames = new VersionMapping();
+						obfNames.add(".*", clsMod.getClassName());
+						add(new ObfuscatedClass(this, clsMod.getClassName(), obfNames));
+					}
+				} else if (mod instanceof ASMMethodMod) {
+					ASMMethodMod mthdMod = (ASMMethodMod) mod;
+					if (getClass(mthdMod.getClassName()) == null) {
+						VersionMapping obfNames = new VersionMapping();
+						obfNames.add(".*", mthdMod.getClassName());
+						add(new ObfuscatedClass(this, mthdMod.getClassName(), obfNames));
+					}
+					if (getMethod(mthdMod.getMethodName()) == null) {
+						VersionMapping obfNames = new VersionMapping();
+						obfNames.add(".*", mthdMod.getMethodName());
+						VersionMapping obfDescs = new VersionMapping();
+						obfDescs.add(".*", "()V");
+						add(new ObfuscatedMethod(this, mthdMod.getMethodName(), obfNames,
+								obfDescs));
+					}
+				}
+			}
 		}
 	}
 
 	public byte[] handle(String name, String transformedName, byte[] basicClass) {
+		if (basicClass == null)
+			return basicClass;
+
 		ObfuscatedClass clsName = null;
 		for (ObfuscatedClass potentialClsName : classes) {
 			if (potentialClsName.matchesName(name)) {

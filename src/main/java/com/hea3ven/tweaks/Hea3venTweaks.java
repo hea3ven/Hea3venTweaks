@@ -55,6 +55,44 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 					.withMapping("1.8", "aqu")
 					.withMapping("15w31[ab]", "aen")
 					.withMapping("15w31c", "aeo")
+					.startMethod("tick")
+					.withMapping("15w31c", "d")
+					.withDesc(".*", "()V")
+					.endMethod()
+					.startField("worldProvider", "Lnet.minecraft.world.WorldProvider;")
+					.withMapping("15w31c", "t")
+					.endField()
+					.startField("worldInfo", "Lnet.minecraft.world.storage.WorldInfo;")
+					.withMapping("15w31c", "x")
+					.endField()
+					.endClass()
+					.startClass("net.minecraft.world.WorldServer")
+					.withMapping("15w31c", "lg")
+					.endClass()
+					.startClass("net.minecraft.world.storage.WorldInfo")
+					.withMapping("15w31c", "avo")
+					.startMethod("getWorldTime")
+					.withMapping("15w31c", "g")
+					.withDesc(".*", "()J")
+					.endMethod()
+					.startMethod("setWorldTime")
+					.withMapping("15w31c", "c")
+					.withDesc(".*", "(J)V")
+					.endMethod()
+					.endClass()
+					.startClass("net.minecraft.client.multiplayer.WorldClient")
+					.withMapping("15w31c", "bfc")
+					.startMethod("getWorldTime")
+					.withMapping("15w31c", "M")
+					.withDesc(".*", "()J")
+					.endMethod()
+					.endClass()
+					.startClass("net.minecraft.world.WorldProvider")
+					.withMapping("15w31c", "aoz")
+					.startMethod("calculateCelestialAngle")
+					.withMapping("15w31c", "a")
+					.withDesc(".*", "(JF)F")
+					.endMethod()
 					.endClass()
 					.startClass("net.minecraft.util.BlockPos")
 					.withMapping("1.8", "dt")
@@ -101,8 +139,14 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 					.withMapping("15w31[ab]", "alq")
 					.withMapping("15w31c", "alr")
 					.endClass()
+					.startClass("com.hea3ven.tweaks.DayNightCycleFunctions")
+					.withMapping(".*", "com.hea3ven.tweaks.DayNightCycleFunctions")
+					.endClass()
+					.addTweak(new RuntimeObfuscation(
+							new String[] {"com.hea3ven.tweaks.DayNightCycleFunctions"}))
 					.addTweak(new PreventBoatBreak())
 					.addTweak(new NonSolidLeaves())
+					.addTweak(new DayNightCycle())
 					.build();
 
 	private static String discoverVersion() {
@@ -122,9 +166,6 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] basicClass) {
-		if (name.startsWith("com.hea3ven.tweaks"))
-			return basicClass;
-
 		return asmTweaksManager.handle(name, transformedName, basicClass);
 	}
 

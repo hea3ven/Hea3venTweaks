@@ -7,6 +7,35 @@ import java.util.Properties;
 
 public class ASMTweaksConfig {
 
+	public class ASMTweakConfig {
+
+		private ASMTweak tweak;
+
+		public ASMTweakConfig(ASMTweak tweak) {
+			this.tweak = tweak;
+		}
+
+		public Boolean getBoolean(String name, Boolean defaultValue) {
+			return Boolean.parseBoolean(getTweakConfigValue(tweak, name, defaultValue.toString()));
+		}
+
+		public String getString(String name, String defaultValue) {
+			return getTweakConfigValue(tweak, name, defaultValue.toString());
+		}
+
+		public Integer getInt(String name, Integer defaultValue) {
+			return Integer.parseInt(getTweakConfigValue(tweak, name, defaultValue.toString()));
+		}
+
+		public Float getFloat(String name, Float defaultValue) {
+			return Float.parseFloat(getTweakConfigValue(tweak, name, defaultValue.toString()));
+		}
+
+		public Double getDouble(String name, Double defaultValue) {
+			return Double.parseDouble(getTweakConfigValue(tweak, name, defaultValue.toString()));
+		}
+	}
+
 	private static File getConfigFile() {
 		String args = System.getProperty("sun.java.command");
 		int gdIndex = args.indexOf("--gameDir");
@@ -50,15 +79,22 @@ public class ASMTweaksConfig {
 	}
 
 	public boolean isEnabled(ASMTweak tweak) {
-		if (!props.containsKey(getTweakConfig(tweak, "enabled"))) {
-			props.setProperty(getTweakConfig(tweak, "enabled"), "true");
-			save();
-		}
-		return Boolean.parseBoolean(props.getProperty(getTweakConfig(tweak, "enabled")));
+		return Boolean.parseBoolean(getTweakConfigValue(tweak, "enabled", "true"));
 	}
 
 	private String getTweakConfig(ASMTweak tweak, String configName) {
 		return tweak.getName() + "." + configName;
 	}
 
+	private String getTweakConfigValue(ASMTweak tweak, String configName, String defaultValue) {
+		if (!props.containsKey(getTweakConfig(tweak, configName))) {
+			props.setProperty(getTweakConfig(tweak, configName), defaultValue.toString());
+			save();
+		}
+		return props.getProperty(getTweakConfig(tweak, configName));
+	}
+
+	public ASMTweakConfig getTweakConfig(ASMTweak tweak) {
+		return new ASMTweakConfig(tweak);
+	}
 }

@@ -18,6 +18,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 import com.hea3ven.tweaks.asmtweaks.ASMClassMod;
 import com.hea3ven.tweaks.asmtweaks.ASMMod;
 import com.hea3ven.tweaks.asmtweaks.ASMTweak;
+import com.hea3ven.tweaks.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
 import com.hea3ven.tweaks.asmtweaks.ASMTweaksManager;
 import com.hea3ven.tweaks.asmtweaks.ObfuscatedMethod;
 
@@ -33,6 +34,10 @@ public class NonSolidLeaves implements ASMTweak {
 	@Override
 	public Set<ASMMod> getModifications() {
 		return modifications;
+	}
+
+	@Override
+	public void configure(ASMTweakConfig conf) {
 	}
 
 	static {

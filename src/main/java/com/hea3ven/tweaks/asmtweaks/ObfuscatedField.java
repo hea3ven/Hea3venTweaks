@@ -11,6 +11,6 @@ public class ObfuscatedField extends Obfuscation {
 	}
 
 	public String getDesc() {
-		return desc;
+		return ASMUtils.obfuscateDesc(mgr, desc);
 	}
 }

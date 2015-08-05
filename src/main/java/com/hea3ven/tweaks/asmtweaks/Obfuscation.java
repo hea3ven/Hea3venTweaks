@@ -22,6 +22,7 @@ class Obfuscation {
 	}
 
 	public boolean matchesName(String name) {
+		name = name.replace('/', '.');
 		return name.equals(getName()) || name.equals(getObfName());
 	}
 

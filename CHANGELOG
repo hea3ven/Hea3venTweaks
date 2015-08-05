@@ -1,4 +1,7 @@
-1.1.0:
+    * add configuration file.
+    * add day/night cycle tweaks.
+
+1.0.1:
     * add support for minecraft 1.7.10, 1.8, and 15w31c.
 
 1.0.0:
