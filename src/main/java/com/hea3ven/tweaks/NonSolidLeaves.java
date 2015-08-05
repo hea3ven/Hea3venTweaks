@@ -85,8 +85,8 @@ public class NonSolidLeaves implements ASMTweak {
 					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 6));
 				}
 				method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
-						mgr.getClass("net.minecraft.block.Block").getIdentifier(),
-						addCollboxMethod.getIdentifier(), desc, false));
+						mgr.getClass("net.minecraft.block.Block").getPath(),
+						addCollboxMethod.getIdentifier(), desc));
 
 				method.instructions.add(lbl1);
 				method.instructions.add(new InsnNode(Opcodes.RETURN));

@@ -92,7 +92,7 @@ public class PreventBoatBreak implements ASMTweak {
 
 					if (currentNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
 						MethodInsnNode methodInsnNode = (MethodInsnNode) currentNode;
-						if (boatClass.getIdentifier().equals(methodInsnNode.owner)
+						if (boatClass.getPath().equals(methodInsnNode.owner)
 								&& moveEntityMethod.matches(methodInsnNode.name,
 										methodInsnNode.desc)) {
 							startIndex = method.instructions.indexOf(currentNode) + 1;
@@ -111,7 +111,7 @@ public class PreventBoatBreak implements ASMTweak {
 				method.instructions.insert(method.instructions.get(startIndex + 0),
 						new VarInsnNode(Opcodes.ALOAD, 0));
 				method.instructions.insert(method.instructions.get(startIndex + 1),
-						new FieldInsnNode(Opcodes.GETFIELD, entityClass.getIdentifier(),
+						new FieldInsnNode(Opcodes.GETFIELD, entityClass.getPath(),
 								collHorizAttr.getIdentifier(), collHorizAttr.getDesc()));
 				method.instructions.insert(method.instructions.get(startIndex + 2),
 						new JumpInsnNode(Opcodes.IFNE, elseLbl));

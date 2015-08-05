@@ -10,6 +10,12 @@ public class ObfuscatedMethod extends Obfuscation {
 		this.descs = descs;
 	}
 
+	@Override
+	public String getIdentifier() {
+		String name = super.getIdentifier();
+		return (!name.contains(".")) ? name : name.substring(name.lastIndexOf('.') + 1);
+	}
+
 	public String getDesc() {
 		return ASMUtils.obfuscateDesc(mgr, descs.get(mgr.getCurrentVersion()));
 	}

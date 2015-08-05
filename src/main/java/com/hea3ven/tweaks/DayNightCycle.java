@@ -101,8 +101,7 @@ public class DayNightCycle implements ASMTweak {
 								"com/hea3ven/tweaks/DayNightCycleFunctions", "addTick",
 								"(L" + mgr
 										.getClass("net.minecraft.world.storage.WorldInfo")
-										.getPath() + ";)V",
-								false));
+										.getPath() + ";)V"));
 			}
 		});
 
@@ -160,8 +159,7 @@ public class DayNightCycle implements ASMTweak {
 								"com/hea3ven/tweaks/DayNightCycleFunctions", "addTick",
 								"(L" + mgr
 										.getClass("net.minecraft.world.storage.WorldInfo")
-										.getPath() + ";)V",
-								false));
+										.getPath() + ";)V"));
 			}
 		});
 
@@ -224,8 +222,7 @@ public class DayNightCycle implements ASMTweak {
 								"com/hea3ven/tweaks/DayNightCycleFunctions", "getWorldTime",
 								"(L" + mgr
 										.getClass("net.minecraft.world.storage.WorldInfo")
-										.getPath() + ";)J",
-								false));
+										.getPath() + ";)J"));
 				getWorldTimeMethod.instructions.add(new InsnNode(Opcodes.LRETURN));
 				cls.methods.add(getWorldTimeMethod);
 
@@ -244,8 +241,7 @@ public class DayNightCycle implements ASMTweak {
 								"com/hea3ven/tweaks/DayNightCycleFunctions", "setWorldTime",
 								"(L" + mgr
 										.getClass("net.minecraft.world.storage.WorldInfo")
-										.getPath() + ";J)V",
-								false));
+										.getPath() + ";J)V"));
 				setWorldTimeMethod.instructions.add(new InsnNode(Opcodes.RETURN));
 				cls.methods.add(setWorldTimeMethod);
 			}
@@ -277,7 +273,7 @@ public class DayNightCycle implements ASMTweak {
 				calcCelAngleMethod.instructions.add(new VarInsnNode(Opcodes.FLOAD, 3));
 				calcCelAngleMethod.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
 						"com/hea3ven/tweaks/DayNightCycleFunctions", "calculateCelestialAngle",
-						"(JF)F", false));
+						"(JF)F"));
 				calcCelAngleMethod.instructions.add(new InsnNode(Opcodes.FRETURN));
 
 				cls.methods.add(calcCelAngleMethod);
