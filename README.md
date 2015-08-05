@@ -20,7 +20,7 @@ This tweak makes leaf blocks non-solid blocks that you can walk through.
 
 Download: [hea3ven-tweaks-1.0.2.jar](http://www.mediafire.com/download/48ah78zkci0vcw3/hea3ven-tweaks-1.0.2.jar)
 
-Changelog: [Changelog](https://github.com/hea3ven/HardModeTweaks/blob/master/CHANGELOG)
+Changelog: [Changelog](https://github.com/hea3ven/Hea3venTweaks/blob/master/CHANGELOG)
 
 Forge (for 1.7.10):
  * Use [HardModeTweaks](https://github.com/hea3ven/HardModeTweaks).
