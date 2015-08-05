@@ -94,6 +94,11 @@ public class ASMTweaksConfig {
 		return props.getProperty(getTweakConfig(tweak, configName));
 	}
 
+	public void setConfig(String configName, String value) {
+		props.setProperty(configName, value);
+		save();
+	}
+
 	public ASMTweakConfig getTweakConfig(ASMTweak tweak) {
 		return new ASMTweakConfig(tweak);
 	}

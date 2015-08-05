@@ -41,6 +41,10 @@ public class ASMTweaksManager {
 		return obfuscated;
 	}
 
+	public ASMTweaksConfig getConfig() {
+		return config;
+	}
+
 	public void add(ObfuscatedClass cls) {
 		classes.add(cls);
 	}

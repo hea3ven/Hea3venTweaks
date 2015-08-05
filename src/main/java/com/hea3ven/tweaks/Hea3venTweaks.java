@@ -21,7 +21,7 @@ import com.hea3ven.tweaks.asmtweaks.ASMTweaksManagerBuilder;
 import com.hea3ven.tweaks.asmtweaks.ASMUtils;
 
 public class Hea3venTweaks implements ITweaker, IClassTransformer {
-	private static ASMTweaksManager asmTweaksManager = new ASMTweaksManagerBuilder(
+	public static ASMTweaksManager asmTweaksManager = new ASMTweaksManagerBuilder(
 			discoverVersion())
 					.startClass("net.minecraft.entity.Entity")
 					.withMapping("1.7.10", "sa")
