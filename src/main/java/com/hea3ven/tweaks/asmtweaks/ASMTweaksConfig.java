@@ -40,7 +40,7 @@ public class ASMTweaksConfig {
 		String args = System.getProperty("sun.java.command");
 		int gdIndex = args.indexOf("--gameDir");
 		if (gdIndex == -1)
-			return new File(".");
+			return new File(".", new File("config", "asmtweaks.conf").toString());
 		gdIndex += 1;
 		int gdEnd = args.indexOf(" --", gdIndex + 9);
 		if (gdEnd == -1)
