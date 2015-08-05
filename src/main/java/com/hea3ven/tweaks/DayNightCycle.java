@@ -27,8 +27,6 @@ import com.hea3ven.tweaks.asmtweaks.ObfuscatedMethod;
 
 public class DayNightCycle implements ASMTweak {
 
-//	public static double dayLengthMultiplier = 1 / 0.3d;
-//	public static float dayToNightRatio = 2 * 0.8f;
 	public static double dayLengthMultiplier = 1 / 1.0d;
 	public static float dayToNightRatio = 2 * 0.5f;
 
@@ -302,10 +300,12 @@ public class DayNightCycle implements ASMTweak {
 							MethodInsnNode node = (MethodInsnNode) mthd.instructions.get(i);
 							if (worldInfoCls.matchesName(node.owner)) {
 								if ((node.name.equals("getWorldTime")
+										|| node.name.equals("func_76073_f")
 										|| getWorldTimeMethod.getObfName().equals(node.name))
 										&& getWorldTimeMethod.getDesc().equals(node.desc)) {
 									node.name = "getRealWorldTime";
 								} else if ((node.name.equals("setWorldTime")
+										|| node.name.equals("func_76068_b")
 										|| setWorldTimeMethod.getObfName().equals(node.name))
 										&& setWorldTimeMethod.getDesc().equals(node.desc)) {
 									node.name = "setRealWorldTime";

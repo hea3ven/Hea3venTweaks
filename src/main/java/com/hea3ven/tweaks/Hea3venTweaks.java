@@ -91,6 +91,8 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 					.withMapping("1.8", "cen")
 					.withMapping("15w31c", "bfc")
 					.startMethod("getWorldTime")
+					.withMapping("1.7.10", "J")
+					.withMapping("1.8", "L")
 					.withMapping("15w31c", "M")
 					.withDesc(".*", "()J")
 					.endMethod()
