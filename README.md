@@ -18,14 +18,14 @@ This tweak makes leaf blocks non-solid blocks that you can walk through.
 
 ### Versions and Installation
 
-Download: [hea3ven-tweaks-1.0.2.jar](http://www.mediafire.com/download/48ah78zkci0vcw3/hea3ven-tweaks-1.0.2.jar)
+Download: [hea3ven-tweaks-1.0.3.jar](http://www.mediafire.com/download/j7lr749umgs4dgu/hea3ven-tweaks-1.0.3.jar)
 
 Changelog: [Changelog](https://github.com/hea3ven/Hea3venTweaks/blob/master/CHANGELOG)
 
 Forge (for 1.7.10):
  * Use [HardModeTweaks](https://github.com/hea3ven/HardModeTweaks).
 
-Meddle (for 1.8/15w31c):
+Meddle (for 1.8/15w31c/15w32a):
  * Requires [Meddle](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2488387-meddle-minecraft-tweakclass-mod-loader-15w31a)
- * Copy hea3ven-tweaks-1.0.2.jar into the "meddle" folder created by Meddle.
+ * Copy hea3ven-tweaks-1.0.3.jar into the "meddle" folder created by Meddle.
 
