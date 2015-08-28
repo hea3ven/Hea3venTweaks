@@ -1,0 +1,26 @@
+CLASS none/cj net/minecraft/util/BlockPos
+CLASS none/lg net/minecraft/world/WorldServer
+CLASS none/qa net/minecraft/entity/Entity
+	METHOD t_ onUpdate ()V
+	METHOD d moveEntity (DDD)V
+	FIELD D isCollidedHorizontally Z
+CLASS none/qj net/minecraft/entity/EntityLivingBase
+CLASS none/wg net/minecraft/entity/item/EntityBoat
+	METHOD t_ onUpdate ()V
+	METHOD d moveEntity (DDD)V
+CLASS none/afk net/minecraft/world/World
+	METHOD d tick ()V
+	FIELD t worldProvider Lnone/apv;
+	FIELD x worldInfo Lnone/awk;
+CLASS none/ahg net/minecraft/block/Block
+	METHOD a addCollisionBoxesToList (Lnone/afk;Lnone/cj;Lnone/aoi;Lnone/axc;Ljava/util/List;Lnone/qa;)V
+CLASS none/amn net/minecraft/block/BlockLeavesBase
+CLASS none/aoi net/minecraft/block/state/IBlockState
+CLASS none/apv net/minecraft/world/WorldProvider
+	METHOD a calculateCelestialAngle (JF)F
+CLASS none/awk net/minecraft/world/storage/WorldInfo
+	METHOD f getWorldTime ()J
+	METHOD c setWorldTime (J)V
+CLASS none/axc net/minecraft/util/AxisAlignedBB
+CLASS none/bfy net/minecraft/client/multiplayer/WorldClient
+	METHOD M getWorldTime ()J

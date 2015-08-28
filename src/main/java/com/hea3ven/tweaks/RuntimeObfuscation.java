@@ -10,15 +10,15 @@ import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import com.hea3ven.tweaks.asmtweaks.ASMClassMod;
-import com.hea3ven.tweaks.asmtweaks.ASMMod;
-import com.hea3ven.tweaks.asmtweaks.ASMTweak;
-import com.hea3ven.tweaks.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
-import com.hea3ven.tweaks.asmtweaks.ASMTweaksManager;
-import com.hea3ven.tweaks.asmtweaks.ASMUtils;
-import com.hea3ven.tweaks.asmtweaks.ObfuscatedClass;
-import com.hea3ven.tweaks.asmtweaks.ObfuscatedField;
-import com.hea3ven.tweaks.asmtweaks.ObfuscatedMethod;
+import com.hea3ven.tools.asmtweaks.ASMClassMod;
+import com.hea3ven.tools.asmtweaks.ASMMod;
+import com.hea3ven.tools.asmtweaks.ASMTweak;
+import com.hea3ven.tools.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
+import com.hea3ven.tools.asmtweaks.ASMTweaksManager;
+import com.hea3ven.tools.asmtweaks.ASMUtils;
+import com.hea3ven.tools.mappings.ClsMapping;
+import com.hea3ven.tools.mappings.FldMapping;
+import com.hea3ven.tools.mappings.MthdMapping;
 
 public class RuntimeObfuscation implements ASMTweak {
 
@@ -58,26 +58,24 @@ public class RuntimeObfuscation implements ASMTweak {
 							for (int i = 0; i < mthd.instructions.size(); i++) {
 								if (mthd.instructions.get(i) instanceof FieldInsnNode) {
 									FieldInsnNode node = (FieldInsnNode) mthd.instructions.get(i);
-									ObfuscatedClass ownerCls = mgr
-											.getClass(node.owner.replace('/', '.'));
-									if (ownerCls != null) {
-										node.owner = ownerCls.getPath();
-										ObfuscatedField ownerFld = mgr
-												.getField(ownerCls.getName() + "." + node.name);
+									ClsMapping ownerCls = mgr.getClass(node.owner);
+									if (ownerCls.getDstPath() != null) {
+										node.owner = ownerCls.getSrcPath();
+										FldMapping ownerFld = mgr
+												.getField(ownerCls.getDstName() + "/" + node.name);
 										if (ownerFld != null)
-											node.name = ownerFld.getIdentifier();
+											node.name = ownerFld.getSrcName();
 									}
 									node.desc = ASMUtils.obfuscateDesc(mgr, node.desc);
 								} else if (mthd.instructions.get(i) instanceof MethodInsnNode) {
 									MethodInsnNode node = (MethodInsnNode) mthd.instructions.get(i);
-									ObfuscatedClass ownerCls = mgr
-											.getClass(node.owner.replace('/', '.'));
-									if (ownerCls != null) {
-										node.owner = ownerCls.getPath();
-										ObfuscatedMethod ownerFld = mgr
-												.getMethod(ownerCls.getName() + "." + node.name);
-										if (ownerFld != null)
-											node.name = ownerFld.getIdentifier();
+									ClsMapping ownerCls = mgr.getClass(node.owner);
+									if (ownerCls.getDstPath() != null) {
+										node.owner = ownerCls.getSrcPath();
+										MthdMapping mthdMap = mgr
+												.getMethod(ownerCls.getDstName() + "/" + node.name);
+										if (mthdMap != null)
+											node.name = mthdMap.getDstName();
 									}
 									node.desc = ASMUtils.obfuscateDesc(mgr, node.desc);
 								}

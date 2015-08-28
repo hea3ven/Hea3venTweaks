@@ -1,5 +1,8 @@
 repositories {
     maven {
+        url "https://raw.github.com/hea3ven/mvn-repo/master"
+    }
+    maven {
         url "https://libraries.minecraft.net/"
     }
     mavenCentral()
@@ -14,6 +17,10 @@ archivesBaseName = "hea3ven-tweaks"
 
 sourceCompatibility = 1.6
 
+configurations {
+    release
+}
+
 dependencies {
     compile 'net.minecraft:launchwrapper:1.12'
     compile 'org.ow2.asm:asm-debug-all:5.0.3'
@@ -22,11 +29,23 @@ dependencies {
     compile 'org.apache.logging.log4j:log4j-api:2.0-beta9'
     compile 'com.google.guava:guava:15.0'
 
-    compile files('build/minecraft-client-15w31c.jar')
+    compile 'com.hea3ven.tools.asmtweaks:asmtweaks:1.0.0'
+    release('com.hea3ven.tools.asmtweaks:asmtweaks:1.0.0') {
+        transitive = false
+    }
+    release('com.hea3ven.tools.mappings:mappings:1.0.0') {
+        transitive = false
+    }
+
+    compile files('build/15w32a.jar')
 }
 
 jar {
 	manifest {
 		attributes("TweakClass":"com.hea3ven.tweaks.Hea3venTweaks")
 	}
+
+    into ('libs') {
+        from configurations.release
+    }
 }

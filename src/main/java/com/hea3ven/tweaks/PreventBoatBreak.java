@@ -14,14 +14,14 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-import com.hea3ven.tweaks.asmtweaks.ASMMethodMod;
-import com.hea3ven.tweaks.asmtweaks.ASMMod;
-import com.hea3ven.tweaks.asmtweaks.ASMTweak;
-import com.hea3ven.tweaks.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
-import com.hea3ven.tweaks.asmtweaks.ASMTweaksManager;
-import com.hea3ven.tweaks.asmtweaks.ObfuscatedClass;
-import com.hea3ven.tweaks.asmtweaks.ObfuscatedField;
-import com.hea3ven.tweaks.asmtweaks.ObfuscatedMethod;
+import com.hea3ven.tools.asmtweaks.ASMMethodMod;
+import com.hea3ven.tools.asmtweaks.ASMMod;
+import com.hea3ven.tools.asmtweaks.ASMTweak;
+import com.hea3ven.tools.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
+import com.hea3ven.tools.asmtweaks.ASMTweaksManager;
+import com.hea3ven.tools.mappings.ClsMapping;
+import com.hea3ven.tools.mappings.FldMapping;
+import com.hea3ven.tools.mappings.MthdMapping;
 
 public class PreventBoatBreak implements ASMTweak {
 
@@ -45,12 +45,12 @@ public class PreventBoatBreak implements ASMTweak {
 		modifications.add(new ASMMethodMod() {
 			@Override
 			public String getClassName() {
-				return "net.minecraft.entity.item.EntityBoat";
+				return "net/minecraft/entity/item/EntityBoat";
 			}
 
 			@Override
 			public String getMethodName() {
-				return "net.minecraft.entity.Entity.onUpdate";
+				return "net/minecraft/entity/item/EntityBoat/onUpdate";
 			}
 
 			@Override
@@ -77,12 +77,12 @@ public class PreventBoatBreak implements ASMTweak {
 				//     // ...
 				// }
 
-				ObfuscatedMethod moveEntityMethod = mgr
-						.getMethod("net.minecraft.entity.Entity.moveEntity");
-				ObfuscatedField collHorizAttr = mgr
-						.getField("net.minecraft.entity.Entity.isCollidedHorizontally");
-				ObfuscatedClass entityClass = mgr.getClass("net.minecraft.entity.Entity");
-				ObfuscatedClass boatClass = mgr.getClass("net.minecraft.entity.item.EntityBoat");
+				MthdMapping moveEntityMethod = mgr
+						.getMethod("net/minecraft/entity/item/EntityBoat/moveEntity");
+				FldMapping collHorizAttr = mgr
+						.getField("net/minecraft/entity/Entity/isCollidedHorizontally");
+				ClsMapping entityClass = mgr.getClass("net/minecraft/entity/Entity");
+				ClsMapping boatClass = mgr.getClass("net/minecraft/entity/item/EntityBoat");
 
 				Iterator<AbstractInsnNode> iter = method.instructions.iterator();
 
@@ -92,9 +92,8 @@ public class PreventBoatBreak implements ASMTweak {
 
 					if (currentNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
 						MethodInsnNode methodInsnNode = (MethodInsnNode) currentNode;
-						if (boatClass.getPath().equals(methodInsnNode.owner)
-								&& moveEntityMethod.matches(methodInsnNode.name,
-										methodInsnNode.desc)) {
+						if (moveEntityMethod.matches(methodInsnNode.owner, methodInsnNode.name,
+								methodInsnNode.desc)) {
 							startIndex = method.instructions.indexOf(currentNode) + 1;
 						}
 					}
@@ -111,8 +110,8 @@ public class PreventBoatBreak implements ASMTweak {
 				method.instructions.insert(method.instructions.get(startIndex + 0),
 						new VarInsnNode(Opcodes.ALOAD, 0));
 				method.instructions.insert(method.instructions.get(startIndex + 1),
-						new FieldInsnNode(Opcodes.GETFIELD, entityClass.getPath(),
-								collHorizAttr.getIdentifier(), collHorizAttr.getDesc()));
+						new FieldInsnNode(Opcodes.GETFIELD, entityClass.getSrcPath(),
+								collHorizAttr.getSrcName(), collHorizAttr.getDesc().getSrc()));
 				method.instructions.insert(method.instructions.get(startIndex + 2),
 						new JumpInsnNode(Opcodes.IFNE, elseLbl));
 			}

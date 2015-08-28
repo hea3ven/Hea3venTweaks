@@ -15,12 +15,12 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-import com.hea3ven.tweaks.asmtweaks.ASMClassMod;
-import com.hea3ven.tweaks.asmtweaks.ASMMod;
-import com.hea3ven.tweaks.asmtweaks.ASMTweak;
-import com.hea3ven.tweaks.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
-import com.hea3ven.tweaks.asmtweaks.ASMTweaksManager;
-import com.hea3ven.tweaks.asmtweaks.ObfuscatedMethod;
+import com.hea3ven.tools.asmtweaks.ASMClassMod;
+import com.hea3ven.tools.asmtweaks.ASMMod;
+import com.hea3ven.tools.asmtweaks.ASMTweak;
+import com.hea3ven.tools.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
+import com.hea3ven.tools.asmtweaks.ASMTweaksManager;
+import com.hea3ven.tools.mappings.MthdMapping;
 
 public class NonSolidLeaves implements ASMTweak {
 
@@ -44,16 +44,16 @@ public class NonSolidLeaves implements ASMTweak {
 		modifications.add(new ASMClassMod() {
 			@Override
 			public String getClassName() {
-				return "net.minecraft.block.BlockLeavesBase";
+				return "net/minecraft/block/BlockLeavesBase";
 			}
 
 			@Override
 			public void handle(ASMTweaksManager mgr, ClassNode cls) {
-				ObfuscatedMethod addCollboxMethod = mgr
-						.getMethod("net.minecraft.block.Block.addCollisionBoxesToList");
-				String desc = addCollboxMethod.getDesc();
+				MthdMapping addCollboxMethod = mgr
+						.getMethod("net/minecraft/block/Block/addCollisionBoxesToList");
+				String desc = addCollboxMethod.getDesc().getSrc();
 				MethodNode method = new MethodNode(Opcodes.ASM4, Opcodes.ACC_PUBLIC,
-						addCollboxMethod.getIdentifier(), desc, null, null);
+						addCollboxMethod.getSrcName(), desc, null, null);
 
 				LabelNode lbl1 = new LabelNode();
 
@@ -63,7 +63,7 @@ public class NonSolidLeaves implements ASMTweak {
 					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 6));
 				}
 				method.instructions.add(new TypeInsnNode(Opcodes.INSTANCEOF,
-						mgr.getClass("net.minecraft.entity.EntityLivingBase").getPath()));
+						mgr.getClass("net/minecraft/entity/EntityLivingBase").getSrcPath()));
 				method.instructions.add(new JumpInsnNode(Opcodes.IFNE, lbl1));
 
 				if (mgr.getCurrentVersion().equals("1.7.10")) {
@@ -85,8 +85,8 @@ public class NonSolidLeaves implements ASMTweak {
 					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 6));
 				}
 				method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
-						mgr.getClass("net.minecraft.block.Block").getPath(),
-						addCollboxMethod.getIdentifier(), desc));
+						mgr.getClass("net/minecraft/block/Block").getSrcPath(),
+						addCollboxMethod.getSrcName(), desc));
 
 				method.instructions.add(lbl1);
 				method.instructions.add(new InsnNode(Opcodes.RETURN));
