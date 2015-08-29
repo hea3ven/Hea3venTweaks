@@ -1,11 +1,13 @@
 CLASS none/dt net/minecraft/util/BlockPos
 CLASS none/qt net/minecraft/world/WorldServer
+    METHOD c tick ()V
 CLASS none/wv net/minecraft/entity/Entity
 	METHOD s_ onUpdate ()V
 	METHOD d moveEntity (DDD)V
 	FIELD D isCollidedHorizontally Z
 CLASS none/xm net/minecraft/entity/EntityLivingBase
 CLASS none/adu net/minecraft/entity/item/EntityBoat
+    METHOD s_ onUpdate ()V
 	METHOD d moveEntity (DDD)V
 CLASS none/aqu net/minecraft/world/World
 	METHOD c tick ()V
@@ -22,4 +24,5 @@ CLASS none/bqo net/minecraft/world/storage/WorldInfo
 	METHOD c setWorldTime (J)V
 CLASS none/brt net/minecraft/util/AxisAlignedBB
 CLASS none/cen net/minecraft/client/multiplayer/WorldClient
+    METHOD c tick ()V
 	METHOD L getWorldTime ()J
