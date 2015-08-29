@@ -53,6 +53,9 @@ public class RuntimeObfuscation implements ASMTweak {
 
 					@Override
 					public void handle(ASMTweaksManager mgr, ClassNode cls) {
+						if (!mgr.isObfuscated())
+							return;
+
 						for (MethodNode mthd : cls.methods) {
 							mthd.desc = ASMUtils.obfuscateDesc(mgr, mthd.desc);
 							for (int i = 0; i < mthd.instructions.size(); i++) {

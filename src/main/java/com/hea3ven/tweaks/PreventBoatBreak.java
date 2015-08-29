@@ -59,22 +59,23 @@ public class PreventBoatBreak implements ASMTweak {
 				//
 				// this.moveEntity(this.motionX, this.motionY, this.motionZ);
 				// if (this.isCollidedHorizontally && d9 > 0.2D) {
-				//     // ...
+				// // ...
 				// }
 				// else
 				// {
-				//     // ...
+				// // ...
 				// }
 				//
 				// To
 				//
 				// this.moveEntity(this.motionX, this.motionY, this.motionZ);
-				// if (!this.isCollidedHorizontally && this.isCollidedHorizontally && d9 > 0.2D) {
-				//     // ...
+				// if (!this.isCollidedHorizontally &&
+				// this.isCollidedHorizontally && d9 > 0.2D) {
+				// // ...
 				// }
 				// else
 				// {
-				//     // ...
+				// // ...
 				// }
 
 				MthdMapping moveEntityMethod = mgr
@@ -110,8 +111,9 @@ public class PreventBoatBreak implements ASMTweak {
 				method.instructions.insert(method.instructions.get(startIndex + 0),
 						new VarInsnNode(Opcodes.ALOAD, 0));
 				method.instructions.insert(method.instructions.get(startIndex + 1),
-						new FieldInsnNode(Opcodes.GETFIELD, entityClass.getSrcPath(),
-								collHorizAttr.getSrcName(), collHorizAttr.getDesc().getSrc()));
+						new FieldInsnNode(Opcodes.GETFIELD, entityClass.getPath(mgr.isObfuscated()),
+								collHorizAttr.getName(mgr.isObfuscated()),
+								collHorizAttr.getDesc().get(mgr.isObfuscated())));
 				method.instructions.insert(method.instructions.get(startIndex + 2),
 						new JumpInsnNode(Opcodes.IFNE, elseLbl));
 			}

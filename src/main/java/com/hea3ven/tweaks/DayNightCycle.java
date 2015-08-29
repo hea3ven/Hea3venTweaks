@@ -58,13 +58,14 @@ public class DayNightCycle implements ASMTweak {
 
 			@Override
 			public String getMethodName() {
-				return "net/minecraft/world/World/tick";
+				return "net/minecraft/world/WorldServer/tick";
 			}
 
 			@Override
 			public void handle(ASMTweaksManager mgr, MethodNode method) {
 				// Replace
-				// > this.worldInfo.setWorldTime(this.worldInfo.getWorldTime() + 1L);
+				// > this.worldInfo.setWorldTime(this.worldInfo.getWorldTime() +
+				// 1L);
 				// To
 				// > TimeTweaksManager.addTick(this.worldInfo);
 
@@ -95,11 +96,12 @@ public class DayNightCycle implements ASMTweak {
 				method.instructions.remove(method.instructions.get(index));
 				method.instructions.remove(method.instructions.get(index));
 				method.instructions.remove(method.instructions.get(index));
-				method.instructions.insertBefore(method.instructions.get(index), new MethodInsnNode(
-						Opcodes.INVOKESTATIC, "com/hea3ven/tweaks/DayNightCycleFunctions",
-						"addTick",
-						"(L" + mgr.getClass("net/minecraft/world/storage/WorldInfo").getSrcPath()
-								+ ";)V"));
+				method.instructions.insertBefore(method.instructions.get(index),
+						new MethodInsnNode(Opcodes.INVOKESTATIC,
+								"com/hea3ven/tweaks/DayNightCycleFunctions", "addTick",
+								"(L" + mgr
+										.getClass("net/minecraft/world/storage/WorldInfo")
+										.getPath(mgr.isObfuscated()) + ";)V"));
 			}
 		});
 
@@ -112,7 +114,7 @@ public class DayNightCycle implements ASMTweak {
 
 			@Override
 			public String getMethodName() {
-				return "net/minecraft/world/World/tick";
+				return "net/minecraft/client/multiplayer/WorldClient/tick";
 			}
 
 			@Override
@@ -150,14 +152,16 @@ public class DayNightCycle implements ASMTweak {
 				ClsMapping worldClientCls = mgr
 						.getClass("net/minecraft/client/multiplayer/WorldClient");
 				method.instructions.insertBefore(method.instructions.get(index),
-						new FieldInsnNode(Opcodes.GETFIELD, worldClientCls.getSrcPath(),
-								worldInfoFld.getSrcName(), worldInfoFld.getDesc().getSrc()));
+						new FieldInsnNode(Opcodes.GETFIELD,
+								worldClientCls.getPath(mgr.isObfuscated()),
+								worldInfoFld.getName(mgr.isObfuscated()),
+								worldInfoFld.getDesc().get(mgr.isObfuscated())));
 				method.instructions.insertBefore(method.instructions.get(index + 1),
 						new MethodInsnNode(Opcodes.INVOKESTATIC,
 								"com/hea3ven/tweaks/DayNightCycleFunctions", "addTick",
 								"(L" + mgr
 										.getClass("net/minecraft/world/storage/WorldInfo")
-										.getSrcPath() + ";)V"));
+										.getPath(mgr.isObfuscated()) + ";)V"));
 			}
 		});
 
@@ -207,35 +211,39 @@ public class DayNightCycle implements ASMTweak {
 			@Override
 			public void handle(ASMTweaksManager mgr, ClassNode cls) {
 				// > long getWorldTime() {
-				// >     return TimeTweaksManager.getWorldTime(this);
+				// > return TimeTweaksManager.getWorldTime(this);
 				// > }
 				MthdMapping getWorldTimeMthdName = mgr
 						.getMethod("net/minecraft/world/storage/WorldInfo/getWorldTime");
 				MethodNode getWorldTimeMethod = new MethodNode(Opcodes.ASM4, Opcodes.ACC_PUBLIC,
-						getWorldTimeMthdName.getSrcName(), getWorldTimeMthdName.getDesc().getSrc(),
-						null, null);
+						getWorldTimeMthdName.getName(mgr.isObfuscated()),
+						getWorldTimeMthdName.getDesc().get(mgr.isObfuscated()), null, null);
 				getWorldTimeMethod.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
-				getWorldTimeMethod.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-						"com/hea3ven/tweaks/DayNightCycleFunctions", "getWorldTime",
-						"(L" + mgr.getClass("net/minecraft/world/storage/WorldInfo").getSrcPath()
-								+ ";)J"));
+				getWorldTimeMethod.instructions
+						.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+								"com/hea3ven/tweaks/DayNightCycleFunctions", "getWorldTime",
+								"(L" + mgr
+										.getClass("net/minecraft/world/storage/WorldInfo")
+										.getPath(mgr.isObfuscated()) + ";)J"));
 				getWorldTimeMethod.instructions.add(new InsnNode(Opcodes.LRETURN));
 				cls.methods.add(getWorldTimeMethod);
 
 				// > void setWorldTime(long time) {
-				// >     TimeTweaksManager.setWorldTime(this, time);
+				// > TimeTweaksManager.setWorldTime(this, time);
 				// > }
 				MthdMapping setWorldTimeMthdName = mgr
 						.getMethod("net/minecraft/world/storage/WorldInfo/setWorldTime");
 				MethodNode setWorldTimeMethod = new MethodNode(Opcodes.ASM4, Opcodes.ACC_PUBLIC,
-						setWorldTimeMthdName.getSrcName(), setWorldTimeMthdName.getDesc().getSrc(),
-						null, null);
+						setWorldTimeMthdName.getName(mgr.isObfuscated()),
+						setWorldTimeMthdName.getDesc().get(mgr.isObfuscated()), null, null);
 				setWorldTimeMethod.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
 				setWorldTimeMethod.instructions.add(new VarInsnNode(Opcodes.LLOAD, 1));
-				setWorldTimeMethod.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-						"com/hea3ven/tweaks/DayNightCycleFunctions", "setWorldTime",
-						"(L" + mgr.getClass("net/minecraft/world/storage/WorldInfo").getSrcPath()
-								+ ";J)V"));
+				setWorldTimeMethod.instructions
+						.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+								"com/hea3ven/tweaks/DayNightCycleFunctions", "setWorldTime",
+								"(L" + mgr
+										.getClass("net/minecraft/world/storage/WorldInfo")
+										.getPath(mgr.isObfuscated()) + ";J)V"));
 				setWorldTimeMethod.instructions.add(new InsnNode(Opcodes.RETURN));
 				cls.methods.add(setWorldTimeMethod);
 			}
@@ -253,17 +261,16 @@ public class DayNightCycle implements ASMTweak {
 			public void handle(ASMTweaksManager mgr, ClassNode cls) {
 				MthdMapping calcCelAngleMethodName = mgr
 						.getMethod("net/minecraft/world/WorldProvider/calculateCelestialAngle");
-				MethodNode calcCelAngleMethod = ASMUtils.getMethod(cls,
-						calcCelAngleMethodName.getSrcName(),
-						calcCelAngleMethodName.getDesc().getSrc());
+				MethodNode calcCelAngleMethod = ASMUtils.getMethod(cls, calcCelAngleMethodName);
 				cls.methods.remove(calcCelAngleMethod);
 
 				// > float calculateCelestialAngle(long time, float off) {
-				// >     return TimeTweaksManager.calculateCelestialAngle(time, off);
+				// > return TimeTweaksManager.calculateCelestialAngle(time,
+				// off);
 				// > }
 				calcCelAngleMethod = new MethodNode(Opcodes.ASM4, Opcodes.ACC_PUBLIC,
-						calcCelAngleMethodName.getSrcName(),
-						calcCelAngleMethodName.getDesc().getSrc(), null, null);
+						calcCelAngleMethodName.getName(mgr.isObfuscated()),
+						calcCelAngleMethodName.getDesc().get(mgr.isObfuscated()), null, null);
 				calcCelAngleMethod.instructions.add(new VarInsnNode(Opcodes.LLOAD, 1));
 				calcCelAngleMethod.instructions.add(new VarInsnNode(Opcodes.FLOAD, 3));
 				calcCelAngleMethod.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
@@ -290,7 +297,8 @@ public class DayNightCycle implements ASMTweak {
 				MthdMapping setWorldTimeMethod = mgr
 						.getMethod("net/minecraft/world/storage/WorldInfo/setWorldTime");
 				for (MethodNode mthd : cls.methods) {
-					mthd.desc = ASMUtils.obfuscateDesc(mgr, mthd.desc);
+					if (mgr.isObfuscated())
+						mthd.desc = ASMUtils.obfuscateDesc(mgr, mthd.desc);
 					for (int i = 0; i < mthd.instructions.size(); i++) {
 						if (mthd.instructions.get(i) instanceof MethodInsnNode) {
 							MethodInsnNode node = (MethodInsnNode) mthd.instructions.get(i);
