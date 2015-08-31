@@ -40,6 +40,17 @@ dependencies {
     compile files('build/15w32a.jar')
 }
 
+sourceSets.main {
+    java {
+        srcDirs 'src/main/java'
+        srcDirs 'src/bootstrap/java'
+    }
+    resources {
+        srcDirs 'src/main/resources'
+        srcDirs 'src/bootstrap/resources'
+    }
+}
+
 jar {
 	manifest {
 		attributes("TweakClass":"com.hea3ven.tweaks.Hea3venTweaks")

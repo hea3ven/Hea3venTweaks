@@ -7,7 +7,7 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
-import com.hea3ven.tweaks.bootstrap.Bootstrap;
+import com.hea3ven.tools.bootstrap.Bootstrap;
 
 public class Hea3venTweaks implements ITweaker, IClassTransformer {
 
