@@ -14,8 +14,9 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 	private static IClassTransformer asmTweaksManager = null;
 
 	static {
-		Bootstrap.initLib("mappings", "1.0.0");
-		Bootstrap.initLib("asmtweaks", "1.0.0");
+		Bootstrap.require("hea3ventweaks", "1.0.x");
+		Bootstrap.initLib("hea3ventweaks", "mappings", "1.0.0", "1.0.x");
+		Bootstrap.initLib("hea3ventweaks", "asmtweaks", "1.0.0", "1.0.x");
 
 		asmTweaksManager = com.hea3ven.tweaks.TweaksBuilder.build();
 	}
