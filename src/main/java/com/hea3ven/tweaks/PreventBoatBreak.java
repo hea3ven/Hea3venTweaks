@@ -19,9 +19,7 @@ import com.hea3ven.tools.asmtweaks.ASMMod;
 import com.hea3ven.tools.asmtweaks.ASMTweak;
 import com.hea3ven.tools.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
 import com.hea3ven.tools.asmtweaks.ASMTweaksManager;
-import com.hea3ven.tools.mappings.ClsMapping;
-import com.hea3ven.tools.mappings.FldMapping;
-import com.hea3ven.tools.mappings.MthdMapping;
+import com.hea3ven.tools.mappings.*;
 
 public class PreventBoatBreak implements ASMTweak {
 
@@ -54,6 +52,11 @@ public class PreventBoatBreak implements ASMTweak {
 			}
 
 			@Override
+			public String getMethodDesc() {
+				return "()V";
+			}
+
+			@Override
 			public void handle(ASMTweaksManager mgr, MethodNode method) {
 				// Replace
 				//
@@ -78,10 +81,9 @@ public class PreventBoatBreak implements ASMTweak {
 				// // ...
 				// }
 
-				MthdMapping moveEntityMethod = mgr
-						.getMethod("net/minecraft/entity/item/EntityBoat/moveEntity");
-				FldMapping collHorizAttr = mgr
-						.getField("net/minecraft/entity/Entity/isCollidedHorizontally");
+				MthdMapping moveEntityMethod =
+						mgr.getMethod("net/minecraft/entity/item/EntityBoat/moveEntity", "(DDD)V");
+				FldMapping collHorizAttr = mgr.getField("net/minecraft/entity/Entity/isCollidedHorizontally");
 				ClsMapping entityClass = mgr.getClass("net/minecraft/entity/Entity");
 				ClsMapping boatClass = mgr.getClass("net/minecraft/entity/item/EntityBoat");
 
@@ -113,11 +115,10 @@ public class PreventBoatBreak implements ASMTweak {
 				method.instructions.insert(method.instructions.get(startIndex + 1),
 						new FieldInsnNode(Opcodes.GETFIELD, entityClass.getPath(mgr.isObfuscated()),
 								collHorizAttr.getName(mgr.isObfuscated()),
-								collHorizAttr.getDesc().get(mgr.isObfuscated())));
+								new Desc(BuiltInTypeDesc.BOOLEAN).get(mgr.isObfuscated())));
 				method.instructions.insert(method.instructions.get(startIndex + 2),
 						new JumpInsnNode(Opcodes.IFNE, elseLbl));
 			}
-
 		});
 	}
 }

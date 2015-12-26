@@ -21,9 +21,7 @@ import com.hea3ven.tools.asmtweaks.ASMTweak;
 import com.hea3ven.tools.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
 import com.hea3ven.tools.asmtweaks.ASMTweaksManager;
 import com.hea3ven.tools.asmtweaks.ASMUtils;
-import com.hea3ven.tools.mappings.ClsMapping;
-import com.hea3ven.tools.mappings.FldMapping;
-import com.hea3ven.tools.mappings.MthdMapping;
+import com.hea3ven.tools.mappings.*;
 
 public class DayNightCycle implements ASMTweak {
 
@@ -62,6 +60,11 @@ public class DayNightCycle implements ASMTweak {
 			}
 
 			@Override
+			public String getMethodDesc() {
+				return "()V";
+			}
+
+			@Override
 			public void handle(ASMTweaksManager mgr, MethodNode method) {
 				// Replace
 				// > this.worldInfo.setWorldTime(this.worldInfo.getWorldTime() +
@@ -69,8 +72,8 @@ public class DayNightCycle implements ASMTweak {
 				// To
 				// > TimeTweaksManager.addTick(this.worldInfo);
 
-				MthdMapping getWorldTimeMthd = mgr
-						.getMethod("net/minecraft/world/storage/WorldInfo/getWorldTime");
+				MthdMapping getWorldTimeMthd =
+						mgr.getMethod("net/minecraft/world/storage/WorldInfo/getWorldTime", "()J");
 				Iterator<AbstractInsnNode> iter = method.instructions.iterator();
 				int index = 0;
 				while (iter.hasNext()) {
@@ -81,7 +84,7 @@ public class DayNightCycle implements ASMTweak {
 						if (getWorldTimeMthd.matches(methodInsnNode.owner, methodInsnNode.name,
 								methodInsnNode.desc)
 
-						&& currentNode.getNext().getOpcode() == Opcodes.LCONST_1) {
+								&& currentNode.getNext().getOpcode() == Opcodes.LCONST_1) {
 							// Found the call
 							index = method.instructions.indexOf(currentNode) - 2;
 						}
@@ -97,11 +100,9 @@ public class DayNightCycle implements ASMTweak {
 				method.instructions.remove(method.instructions.get(index));
 				method.instructions.remove(method.instructions.get(index));
 				method.instructions.insertBefore(method.instructions.get(index),
-						new MethodInsnNode(Opcodes.INVOKESTATIC,
-								"com/hea3ven/tweaks/DayNightCycleFunctions", "addTick",
-								"(L" + mgr
-										.getClass("net/minecraft/world/storage/WorldInfo")
-										.getPath(mgr.isObfuscated()) + ";)V"));
+						new MethodInsnNode(Opcodes.INVOKESTATIC, "com/hea3ven/tweaks/DayNightCycleFunctions",
+								"addTick", "(L" + mgr.getClass("net/minecraft/world/storage/WorldInfo")
+								.getPath(mgr.isObfuscated()) + ";)V"));
 			}
 		});
 
@@ -118,14 +119,19 @@ public class DayNightCycle implements ASMTweak {
 			}
 
 			@Override
+			public String getMethodDesc() {
+				return "()V";
+			}
+
+			@Override
 			public void handle(ASMTweaksManager mgr, MethodNode method) {
 				// Replace
 				// > this.setWorldTime(this.getWorldTime() + 1L);
 				// To
 				// > TimeTweaksManager.addTick(this.provider);
 
-				MthdMapping getWorldTimeMthd = mgr
-						.getMethod("net/minecraft/client/multiplayer/WorldClient/getWorldTime");
+				MthdMapping getWorldTimeMthd =
+						mgr.getMethod("net/minecraft/client/multiplayer/WorldClient/getWorldTime", "()J");
 				int index = 0;
 				Iterator<AbstractInsnNode> iter = method.instructions.iterator();
 				while (iter.hasNext()) {
@@ -134,8 +140,8 @@ public class DayNightCycle implements ASMTweak {
 					if (currentNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
 						MethodInsnNode methodInsnNode = (MethodInsnNode) currentNode;
 						if (getWorldTimeMthd.matches(methodInsnNode.owner, methodInsnNode.name,
-								methodInsnNode.desc)
-								&& currentNode.getNext().getOpcode() == Opcodes.LCONST_1) {
+								methodInsnNode.desc) &&
+								currentNode.getNext().getOpcode() == Opcodes.LCONST_1) {
 							index = method.instructions.indexOf(currentNode) - 1;
 						}
 					}
@@ -148,20 +154,16 @@ public class DayNightCycle implements ASMTweak {
 				method.instructions.remove(method.instructions.get(index));
 				method.instructions.remove(method.instructions.get(index));
 				method.instructions.remove(method.instructions.get(index));
-				FldMapping worldInfoFld = mgr.getField("net.minecraft.world.World.worldInfo");
-				ClsMapping worldClientCls = mgr
-						.getClass("net/minecraft/client/multiplayer/WorldClient");
+				FldMapping worldInfoFld = mgr.getField("net/minecraft/world/World/worldInfo");
+				ClsMapping worldClientCls = mgr.getClass("net/minecraft/client/multiplayer/WorldClient");
+				ClsMapping worldInfoCls = mgr.getClass("net/minecraft/world/storage/WorldInfo");
 				method.instructions.insertBefore(method.instructions.get(index),
-						new FieldInsnNode(Opcodes.GETFIELD,
-								worldClientCls.getPath(mgr.isObfuscated()),
+						new FieldInsnNode(Opcodes.GETFIELD, worldClientCls.getPath(mgr.isObfuscated()),
 								worldInfoFld.getName(mgr.isObfuscated()),
-								worldInfoFld.getDesc().get(mgr.isObfuscated())));
+								new Desc(new ClsTypeDesc(worldInfoCls)).get(mgr.isObfuscated())));
 				method.instructions.insertBefore(method.instructions.get(index + 1),
-						new MethodInsnNode(Opcodes.INVOKESTATIC,
-								"com/hea3ven/tweaks/DayNightCycleFunctions", "addTick",
-								"(L" + mgr
-										.getClass("net/minecraft/world/storage/WorldInfo")
-										.getPath(mgr.isObfuscated()) + ";)V"));
+						new MethodInsnNode(Opcodes.INVOKESTATIC, "com/hea3ven/tweaks/DayNightCycleFunctions",
+								"addTick", "(L" + worldInfoCls.getPath(mgr.isObfuscated()) + ";)V"));
 			}
 		});
 
@@ -175,6 +177,11 @@ public class DayNightCycle implements ASMTweak {
 			@Override
 			public String getMethodName() {
 				return "net/minecraft/world/storage/WorldInfo/getWorldTime";
+			}
+
+			@Override
+			public String getMethodDesc() {
+				return "()J";
 			}
 
 			@Override
@@ -196,6 +203,11 @@ public class DayNightCycle implements ASMTweak {
 			}
 
 			@Override
+			public String getMethodDesc() {
+				return "(J)V";
+			}
+
+			@Override
 			public void handle(ASMTweaksManager mgr, MethodNode method) {
 				method.name = "setRealWorldTime";
 			}
@@ -213,41 +225,36 @@ public class DayNightCycle implements ASMTweak {
 				// > long getWorldTime() {
 				// > return TimeTweaksManager.getWorldTime(this);
 				// > }
-				MthdMapping getWorldTimeMthdName = mgr
-						.getMethod("net/minecraft/world/storage/WorldInfo/getWorldTime");
+				MthdMapping getWorldTimeMthdName =
+						mgr.getMethod("net/minecraft/world/storage/WorldInfo/getWorldTime", "()J");
 				MethodNode getWorldTimeMethod = new MethodNode(Opcodes.ASM4, Opcodes.ACC_PUBLIC,
 						getWorldTimeMthdName.getName(mgr.isObfuscated()),
 						getWorldTimeMthdName.getDesc().get(mgr.isObfuscated()), null, null);
 				getWorldTimeMethod.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
-				getWorldTimeMethod.instructions
-						.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-								"com/hea3ven/tweaks/DayNightCycleFunctions", "getWorldTime",
-								"(L" + mgr
-										.getClass("net/minecraft/world/storage/WorldInfo")
-										.getPath(mgr.isObfuscated()) + ";)J"));
+				getWorldTimeMethod.instructions.add(
+						new MethodInsnNode(Opcodes.INVOKESTATIC, "com/hea3ven/tweaks/DayNightCycleFunctions",
+								"getWorldTime", "(L" + mgr.getClass("net/minecraft/world/storage/WorldInfo")
+								.getPath(mgr.isObfuscated()) + ";)J"));
 				getWorldTimeMethod.instructions.add(new InsnNode(Opcodes.LRETURN));
 				cls.methods.add(getWorldTimeMethod);
 
 				// > void setWorldTime(long time) {
 				// > TimeTweaksManager.setWorldTime(this, time);
 				// > }
-				MthdMapping setWorldTimeMthdName = mgr
-						.getMethod("net/minecraft/world/storage/WorldInfo/setWorldTime");
+				MthdMapping setWorldTimeMthdName =
+						mgr.getMethod("net/minecraft/world/storage/WorldInfo/setWorldTime", "(J)V");
 				MethodNode setWorldTimeMethod = new MethodNode(Opcodes.ASM4, Opcodes.ACC_PUBLIC,
 						setWorldTimeMthdName.getName(mgr.isObfuscated()),
 						setWorldTimeMthdName.getDesc().get(mgr.isObfuscated()), null, null);
 				setWorldTimeMethod.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
 				setWorldTimeMethod.instructions.add(new VarInsnNode(Opcodes.LLOAD, 1));
-				setWorldTimeMethod.instructions
-						.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-								"com/hea3ven/tweaks/DayNightCycleFunctions", "setWorldTime",
-								"(L" + mgr
-										.getClass("net/minecraft/world/storage/WorldInfo")
-										.getPath(mgr.isObfuscated()) + ";J)V"));
+				setWorldTimeMethod.instructions.add(
+						new MethodInsnNode(Opcodes.INVOKESTATIC, "com/hea3ven/tweaks/DayNightCycleFunctions",
+								"setWorldTime", "(L" + mgr.getClass("net/minecraft/world/storage/WorldInfo")
+								.getPath(mgr.isObfuscated()) + ";J)V"));
 				setWorldTimeMethod.instructions.add(new InsnNode(Opcodes.RETURN));
 				cls.methods.add(setWorldTimeMethod);
 			}
-
 		});
 
 		modifications.add(new ASMClassMod() {
@@ -259,8 +266,8 @@ public class DayNightCycle implements ASMTweak {
 
 			@Override
 			public void handle(ASMTweaksManager mgr, ClassNode cls) {
-				MthdMapping calcCelAngleMethodName = mgr
-						.getMethod("net/minecraft/world/WorldProvider/calculateCelestialAngle");
+				MthdMapping calcCelAngleMethodName =
+						mgr.getMethod("net/minecraft/world/WorldProvider/calculateCelestialAngle", "(JF)F");
 				MethodNode calcCelAngleMethod = ASMUtils.getMethod(cls, calcCelAngleMethodName);
 				cls.methods.remove(calcCelAngleMethod);
 
@@ -273,9 +280,9 @@ public class DayNightCycle implements ASMTweak {
 						calcCelAngleMethodName.getDesc().get(mgr.isObfuscated()), null, null);
 				calcCelAngleMethod.instructions.add(new VarInsnNode(Opcodes.LLOAD, 1));
 				calcCelAngleMethod.instructions.add(new VarInsnNode(Opcodes.FLOAD, 3));
-				calcCelAngleMethod.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-						"com/hea3ven/tweaks/DayNightCycleFunctions", "calculateCelestialAngle",
-						"(JF)F"));
+				calcCelAngleMethod.instructions.add(
+						new MethodInsnNode(Opcodes.INVOKESTATIC, "com/hea3ven/tweaks/DayNightCycleFunctions",
+								"calculateCelestialAngle", "(JF)F"));
 				calcCelAngleMethod.instructions.add(new InsnNode(Opcodes.FRETURN));
 
 				cls.methods.add(calcCelAngleMethod);
@@ -292,10 +299,10 @@ public class DayNightCycle implements ASMTweak {
 			@Override
 			public void handle(ASMTweaksManager mgr, ClassNode cls) {
 				ClsMapping worldInfoCls = mgr.getClass("net/minecraft/world/storage/WorldInfo");
-				MthdMapping getWorldTimeMethod = mgr
-						.getMethod("net/minecraft/world/storage/WorldInfo/getWorldTime");
-				MthdMapping setWorldTimeMethod = mgr
-						.getMethod("net/minecraft/world/storage/WorldInfo/setWorldTime");
+				MthdMapping getWorldTimeMethod =
+						mgr.getMethod("net/minecraft/world/storage/WorldInfo/getWorldTime", "()J");
+				MthdMapping setWorldTimeMethod =
+						mgr.getMethod("net/minecraft/world/storage/WorldInfo/setWorldTime", "(J)V");
 				for (MethodNode mthd : cls.methods) {
 					if (mgr.isObfuscated())
 						mthd.desc = ASMUtils.obfuscateDesc(mgr, mthd.desc);
@@ -303,21 +310,14 @@ public class DayNightCycle implements ASMTweak {
 						if (mthd.instructions.get(i) instanceof MethodInsnNode) {
 							MethodInsnNode node = (MethodInsnNode) mthd.instructions.get(i);
 							if (worldInfoCls.matches(node.owner)) {
-								if ((node.name.equals("getWorldTime")
-										|| node.name.equals("func_76073_f")
-										|| getWorldTimeMethod.getSrcName().equals(node.name))
-										&& getWorldTimeMethod
-												.getDesc()
-												.getSrc()
-												.equals(node.desc)) {
+								if ((node.name.equals("getWorldTime") || node.name.equals("func_76073_f") ||
+										getWorldTimeMethod.getSrcName().equals(node.name)) &&
+										getWorldTimeMethod.getDesc().getSrc().equals(node.desc)) {
 									node.name = "getRealWorldTime";
-								} else if ((node.name.equals("setWorldTime")
-										|| node.name.equals("func_76068_b")
-										|| setWorldTimeMethod.getSrcName().equals(node.name))
-										&& setWorldTimeMethod
-												.getDesc()
-												.getSrc()
-												.equals(node.desc)) {
+								} else if ((node.name.equals("setWorldTime") ||
+										node.name.equals("func_76068_b") ||
+										setWorldTimeMethod.getSrcName().equals(node.name)) &&
+										setWorldTimeMethod.getDesc().getSrc().equals(node.desc)) {
 									node.name = "setRealWorldTime";
 								}
 							}

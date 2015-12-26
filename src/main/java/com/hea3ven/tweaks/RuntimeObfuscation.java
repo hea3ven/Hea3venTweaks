@@ -64,8 +64,8 @@ public class RuntimeObfuscation implements ASMTweak {
 									ClsMapping ownerCls = mgr.getClass(node.owner);
 									if (ownerCls.getDstPath() != null) {
 										node.owner = ownerCls.getSrcPath();
-										FldMapping ownerFld = mgr
-												.getField(ownerCls.getDstName() + "/" + node.name);
+										FldMapping ownerFld =
+												mgr.getField(ownerCls.getDstName() + "/" + node.name);
 										if (ownerFld != null)
 											node.name = ownerFld.getSrcName();
 									}
@@ -75,8 +75,9 @@ public class RuntimeObfuscation implements ASMTweak {
 									ClsMapping ownerCls = mgr.getClass(node.owner);
 									if (ownerCls.getDstPath() != null) {
 										node.owner = ownerCls.getSrcPath();
-										MthdMapping mthdMap = mgr
-												.getMethod(ownerCls.getDstName() + "/" + node.name);
+										MthdMapping mthdMap =
+												mgr.getMethod(ownerCls.getDstName() + "/" + node.name,
+														node.desc);
 										if (mthdMap != null)
 											node.name = mthdMap.getDstName();
 									}
