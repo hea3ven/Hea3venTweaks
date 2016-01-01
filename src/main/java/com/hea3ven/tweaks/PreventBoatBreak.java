@@ -81,8 +81,9 @@ public class PreventBoatBreak implements ASMTweak {
 				// // ...
 				// }
 
+				ClsMapping entityBoatCls = mgr.getClass("net/minecraft/entity/item/EntityBoat");
 				MthdMapping moveEntityMethod =
-						mgr.getMethod("net/minecraft/entity/item/EntityBoat/moveEntity", "(DDD)V");
+						mgr.getMethod("net/minecraft/entity/Entity/moveEntity", "(DDD)V");
 				FldMapping collHorizAttr = mgr.getField("net/minecraft/entity/Entity/isCollidedHorizontally");
 				ClsMapping entityClass = mgr.getClass("net/minecraft/entity/Entity");
 				ClsMapping boatClass = mgr.getClass("net/minecraft/entity/item/EntityBoat");
@@ -95,8 +96,11 @@ public class PreventBoatBreak implements ASMTweak {
 
 					if (currentNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
 						MethodInsnNode methodInsnNode = (MethodInsnNode) currentNode;
-						if (moveEntityMethod.matches(methodInsnNode.owner, methodInsnNode.name,
-								methodInsnNode.desc)) {
+						if (entityBoatCls.getPath(mgr.isObfuscated()).equals(methodInsnNode.owner) &&
+								moveEntityMethod.getName(mgr.isObfuscated()).equals(methodInsnNode.name) &&
+								moveEntityMethod.getDesc()
+										.get(mgr.isObfuscated())
+										.equals(methodInsnNode.desc)) {
 							startIndex = method.instructions.indexOf(currentNode) + 1;
 						}
 					}

@@ -62,7 +62,7 @@ public class RuntimeObfuscation implements ASMTweak {
 								if (mthd.instructions.get(i) instanceof FieldInsnNode) {
 									FieldInsnNode node = (FieldInsnNode) mthd.instructions.get(i);
 									ClsMapping ownerCls = mgr.getClass(node.owner);
-									if (ownerCls.getDstPath() != null) {
+									if (ownerCls != null) {
 										node.owner = ownerCls.getSrcPath();
 										FldMapping ownerFld =
 												mgr.getField(ownerCls.getDstName() + "/" + node.name);
@@ -73,7 +73,7 @@ public class RuntimeObfuscation implements ASMTweak {
 								} else if (mthd.instructions.get(i) instanceof MethodInsnNode) {
 									MethodInsnNode node = (MethodInsnNode) mthd.instructions.get(i);
 									ClsMapping ownerCls = mgr.getClass(node.owner);
-									if (ownerCls.getDstPath() != null) {
+									if (ownerCls != null) {
 										node.owner = ownerCls.getSrcPath();
 										MthdMapping mthdMap =
 												mgr.getMethod(ownerCls.getDstName() + "/" + node.name,

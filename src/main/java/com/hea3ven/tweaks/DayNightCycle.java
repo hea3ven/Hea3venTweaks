@@ -130,8 +130,8 @@ public class DayNightCycle implements ASMTweak {
 				// To
 				// > TimeTweaksManager.addTick(this.provider);
 
-				MthdMapping getWorldTimeMthd =
-						mgr.getMethod("net/minecraft/client/multiplayer/WorldClient/getWorldTime", "()J");
+				ClsMapping worldClientCls = mgr.getClass("net/minecraft/client/multiplayer/WorldClient");
+				MthdMapping getWorldTimeMthd = mgr.getMethod("net/minecraft/world/World/getWorldTime", "()J");
 				int index = 0;
 				Iterator<AbstractInsnNode> iter = method.instructions.iterator();
 				while (iter.hasNext()) {
@@ -139,8 +139,11 @@ public class DayNightCycle implements ASMTweak {
 
 					if (currentNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
 						MethodInsnNode methodInsnNode = (MethodInsnNode) currentNode;
-						if (getWorldTimeMthd.matches(methodInsnNode.owner, methodInsnNode.name,
-								methodInsnNode.desc) &&
+						if (worldClientCls.getPath(mgr.isObfuscated()).equals(methodInsnNode.owner) &&
+								getWorldTimeMthd.getName(mgr.isObfuscated()).equals(methodInsnNode.name) &&
+								getWorldTimeMthd.getDesc()
+										.get(mgr.isObfuscated())
+										.equals(methodInsnNode.desc) &&
 								currentNode.getNext().getOpcode() == Opcodes.LCONST_1) {
 							index = method.instructions.indexOf(currentNode) - 1;
 						}
@@ -155,7 +158,6 @@ public class DayNightCycle implements ASMTweak {
 				method.instructions.remove(method.instructions.get(index));
 				method.instructions.remove(method.instructions.get(index));
 				FldMapping worldInfoFld = mgr.getField("net/minecraft/world/World/worldInfo");
-				ClsMapping worldClientCls = mgr.getClass("net/minecraft/client/multiplayer/WorldClient");
 				ClsMapping worldInfoCls = mgr.getClass("net/minecraft/world/storage/WorldInfo");
 				method.instructions.insertBefore(method.instructions.get(index),
 						new FieldInsnNode(Opcodes.GETFIELD, worldClientCls.getPath(mgr.isObfuscated()),
