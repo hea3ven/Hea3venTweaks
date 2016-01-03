@@ -14,10 +14,7 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 	private static IClassTransformer asmTweaksManager = null;
 
 	static {
-		Bootstrap.require("hea3ventweaks", "1.0.x");
-		Bootstrap.initLib("hea3ventweaks", "h3nt-mappings", "1.0.1", "1.0.x");
-		Bootstrap.initLib("hea3ventweaks", "h3nt-asmtweaks", "1.0.2", "1.0.x");
-
+		Bootstrap.init();
 		asmTweaksManager = com.hea3ven.tweaks.TweaksBuilder.build();
 	}
 
@@ -32,7 +29,6 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 
 	@Override
 	public void injectIntoClassLoader(LaunchClassLoader classLoader) {
-		classLoader.registerTransformer(Hea3venTweaks.class.getName());
 	}
 
 	@Override
@@ -46,8 +42,6 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 	}
 
 	public static void setConfig(String name, String value) {
-		((com.hea3ven.tools.asmtweaks.ASMTweaksManager) asmTweaksManager)
-				.getConfig()
-				.setConfig(name, value);
+		((com.hea3ven.tools.asmtweaks.ASMTweaksManager) asmTweaksManager).getConfig().setConfig(name, value);
 	}
 }
