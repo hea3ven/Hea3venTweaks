@@ -26,6 +26,10 @@ public class TweaksBuilder {
 						"net/minecraft/world/World/func_72820_D", "()J")
 				.addMthdSrg("net/minecraft/client/multiplayer/WorldClient/tick",
 						"net/minecraft/client/multiplayer/WorldClient/func_72835_b", "()V")
+				.addMthdSrg("net/minecraft/client/multiplayer/WorldClient/setWorldTime",
+						"net/minecraft/client/multiplayer/WorldClient/func_72877_b", "(J)V")
+				.addMthdSrg("net/minecraft/world/World/getWorldTime",
+						"net/minecraft/world/World/func_72820_D", "()J")
 				.addMthdSrg("net/minecraft/entity/Entity/moveEntity",
 						"net/minecraft/entity/Entity/func_70091_d", "(DDD)V")
 				.addMthdSrg("net/minecraft/block/Block/addCollisionBoxesToList",

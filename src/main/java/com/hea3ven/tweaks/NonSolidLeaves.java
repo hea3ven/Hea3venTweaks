@@ -5,22 +5,17 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.IntInsnNode;
-import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-import com.hea3ven.tools.asmtweaks.ASMClassMod;
 import com.hea3ven.tools.asmtweaks.ASMMod;
 import com.hea3ven.tools.asmtweaks.ASMTweak;
 import com.hea3ven.tools.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
-import com.hea3ven.tools.asmtweaks.ASMTweaksManager;
-import com.hea3ven.tools.mappings.MthdMapping;
+import com.hea3ven.tools.asmtweaks.editors.MethodEditor;
+import com.hea3ven.tools.asmtweaks.tweaks.ASMClassModAddMethod;
 
 public class NonSolidLeaves implements ASMTweak {
 
@@ -41,58 +36,47 @@ public class NonSolidLeaves implements ASMTweak {
 	}
 
 	static {
-		modifications.add(new ASMClassMod() {
+		modifications.add(new ASMClassModAddMethod("net/minecraft/block/BlockLeavesBase",
+				"net/minecraft/block/Block/addCollisionBoxesToList",
+				"(Lnet/minecraft/world/World;Lnet/minecraft/util/BlockPos;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/AxisAlignedBB;Ljava/util/List;Lnet/minecraft/entity/Entity;)V") {
 			@Override
-			public String getClassName() {
-				return "net/minecraft/block/BlockLeavesBase";
-			}
+			protected void handle(MethodEditor editor) {
 
-			@Override
-			public void handle(ASMTweaksManager mgr, ClassNode cls) {
-				MthdMapping addCollboxMethod =
-						mgr.getMethod("net/minecraft/block/Block/addCollisionBoxesToList",
-								"(Lnet/minecraft/world/World;Lnet/minecraft/util/BlockPos;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/AxisAlignedBB;Ljava/util/List;Lnet/minecraft/entity/Entity;)V");
-				String desc = addCollboxMethod.getDesc().get(mgr.isObfuscated());
-				MethodNode method = new MethodNode(Opcodes.ASM4, Opcodes.ACC_PUBLIC,
-						addCollboxMethod.getName(mgr.isObfuscated()), desc, null, null);
+				editor.addImport("java/util/List");
+				editor.addImport("net/minecraft/block/Block");
+				editor.addImport("net/minecraft/block/state/IBlockState");
+				editor.addImport("net/minecraft/entity/Entity");
+				editor.addImport("net/minecraft/entity/EntityLivingBase");
+				editor.addImport("net/minecraft/util/AxisAlignedBB");
+				editor.addImport("net/minecraft/util/BlockPos");
+				editor.addImport("net/minecraft/world/World");
 
 				LabelNode lbl1 = new LabelNode();
 
-				if (mgr.getCurrentVersion().equals("1.7.10")) {
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 7));
+				editor.setInsertMode();
+				if (editor.getManager().getCurrentVersion().equals("1.7.10")) {
+					editor.varInsn(Opcodes.ALOAD, 7);
 				} else {
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 6));
+					editor.varInsn(Opcodes.ALOAD, 6);
 				}
-				method.instructions.add(new TypeInsnNode(Opcodes.INSTANCEOF,
-						mgr.getClass("net/minecraft/entity/EntityLivingBase").getPath(mgr.isObfuscated())));
-				method.instructions.add(new JumpInsnNode(Opcodes.IFNE, lbl1));
+				editor.typeInsn(Opcodes.INSTANCEOF, "EntityLivingBase");
+				editor.jumpInsn(Opcodes.IFNE, lbl1);
 
-				if (mgr.getCurrentVersion().equals("1.7.10")) {
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 1));
-					method.instructions.add(new IntInsnNode(Opcodes.ILOAD, 2));
-					method.instructions.add(new IntInsnNode(Opcodes.ILOAD, 3));
-					method.instructions.add(new IntInsnNode(Opcodes.ILOAD, 4));
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 5));
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 6));
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 7));
-				} else {
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 1));
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 2));
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 3));
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 4));
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 5));
-					method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 6));
+				editor.varInsn(Opcodes.ALOAD, 0);
+				editor.varInsn(Opcodes.ALOAD, 1);
+				editor.varInsn(Opcodes.ALOAD, 2);
+				editor.varInsn(Opcodes.ALOAD, 3);
+				editor.varInsn(Opcodes.ALOAD, 4);
+				editor.varInsn(Opcodes.ALOAD, 5);
+				editor.varInsn(Opcodes.ALOAD, 6);
+				if (editor.getManager().getCurrentVersion().equals("1.7.10")) {
+					editor.varInsn(Opcodes.ALOAD, 7);
 				}
-				method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
-						mgr.getClass("net/minecraft/block/Block").getPath(mgr.isObfuscated()),
-						addCollboxMethod.getName(mgr.isObfuscated()), desc));
+				editor.methodInsn(Opcodes.INVOKESPECIAL, "Block", "Block/addCollisionBoxesToList",
+						"(LWorld;LBlockPos;LIBlockState;LAxisAlignedBB;LList;LEntity;)V");
 
-				method.instructions.add(lbl1);
-				method.instructions.add(new InsnNode(Opcodes.RETURN));
-
-				cls.methods.add(method);
+				editor.labelInsn(lbl1);
+				editor.insn(Opcodes.RETURN);
 			}
 		});
 	}
