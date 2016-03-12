@@ -12,6 +12,7 @@ import com.hea3ven.tools.asmtweaks.ASMTweak;
 import com.hea3ven.tools.asmtweaks.ASMTweaksConfig.ASMTweakConfig;
 import com.hea3ven.tools.asmtweaks.ASMTweaksManager;
 import com.hea3ven.tools.asmtweaks.editors.MethodEditor;
+import com.hea3ven.tools.asmtweaks.editors.ObfuscationMode;
 import com.hea3ven.tools.asmtweaks.tweaks.ASMClassModAddMethod;
 import com.hea3ven.tools.asmtweaks.tweaks.ASMMethodModEditCode;
 import com.hea3ven.tools.asmtweaks.tweaks.ASMMethodModReplaceAllCalls;
@@ -207,20 +208,22 @@ public class DayNightCycle implements ASMTweak {
 		modifications.add(new ASMMethodModReplaceAllCalls("com/hea3ven/tweaks/DayNightCycleFunctions/addTick",
 				"(Lnet/minecraft/world/storage/WorldInfo;)V",
 				"net/minecraft/world/storage/WorldInfo/getWorldTime",
-				"net/minecraft/world/storage/WorldInfo/getRealWorldTime", "()J", false));
+				"net/minecraft/world/storage/WorldInfo/getRealWorldTime", "()J", ObfuscationMode.SRG));
 		modifications.add(new ASMMethodModReplaceAllCalls("com/hea3ven/tweaks/DayNightCycleFunctions/addTick",
 				"(Lnet/minecraft/world/storage/WorldInfo;)V",
 				"net/minecraft/world/storage/WorldInfo/setWorldTime",
-				"net/minecraft/world/storage/WorldInfo/setRealWorldTime", "(J)V", false));
+				"net/minecraft/world/storage/WorldInfo/setRealWorldTime", "(J)V", ObfuscationMode.SRG));
 		modifications.add(
 				new ASMMethodModReplaceAllCalls("com/hea3ven/tweaks/DayNightCycleFunctions/getWorldTime",
 						"(Lnet/minecraft/world/storage/WorldInfo;)J",
 						"net/minecraft/world/storage/WorldInfo/getWorldTime",
-						"net/minecraft/world/storage/WorldInfo/getRealWorldTime", "()J", false));
+						"net/minecraft/world/storage/WorldInfo/getRealWorldTime", "()J",
+						ObfuscationMode.SRG));
 		modifications.add(
 				new ASMMethodModReplaceAllCalls("com/hea3ven/tweaks/DayNightCycleFunctions/setWorldTime",
 						"(Lnet/minecraft/world/storage/WorldInfo;J)V",
 						"net/minecraft/world/storage/WorldInfo/setWorldTime",
-						"net/minecraft/world/storage/WorldInfo/setRealWorldTime", "(J)V", false));
+						"net/minecraft/world/storage/WorldInfo/setRealWorldTime", "(J)V",
+						ObfuscationMode.SRG));
 	}
 }
