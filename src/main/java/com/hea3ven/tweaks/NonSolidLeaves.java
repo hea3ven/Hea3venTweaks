@@ -36,9 +36,9 @@ public class NonSolidLeaves implements ASMTweak {
 	}
 
 	static {
-		modifications.add(new ASMClassModAddMethod("net/minecraft/block/BlockLeavesBase",
-				"net/minecraft/block/Block/addCollisionBoxesToList",
-				"(Lnet/minecraft/world/World;Lnet/minecraft/util/BlockPos;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/AxisAlignedBB;Ljava/util/List;Lnet/minecraft/entity/Entity;)V") {
+		modifications.add(new ASMClassModAddMethod("net/minecraft/block/BlockLeaves",
+				"net/minecraft/block/Block/addCollisionBoxToList",
+				"(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/AxisAlignedBB;Ljava/util/List;Lnet/minecraft/entity/Entity;)V") {
 			@Override
 			protected void handle(MethodEditor editor) {
 
@@ -47,18 +47,14 @@ public class NonSolidLeaves implements ASMTweak {
 				editor.addImport("net/minecraft/block/state/IBlockState");
 				editor.addImport("net/minecraft/entity/Entity");
 				editor.addImport("net/minecraft/entity/EntityLivingBase");
-				editor.addImport("net/minecraft/util/AxisAlignedBB");
-				editor.addImport("net/minecraft/util/BlockPos");
+				editor.addImport("net/minecraft/util/math/AxisAlignedBB");
+				editor.addImport("net/minecraft/util/math/BlockPos");
 				editor.addImport("net/minecraft/world/World");
 
 				LabelNode lbl1 = new LabelNode();
 
 				editor.setInsertMode();
-				if (editor.getManager().getCurrentVersion().equals("1.7.10")) {
-					editor.varInsn(Opcodes.ALOAD, 7);
-				} else {
 					editor.varInsn(Opcodes.ALOAD, 6);
-				}
 				editor.typeInsn(Opcodes.INSTANCEOF, "EntityLivingBase");
 				editor.jumpInsn(Opcodes.IFNE, lbl1);
 
@@ -69,11 +65,8 @@ public class NonSolidLeaves implements ASMTweak {
 				editor.varInsn(Opcodes.ALOAD, 4);
 				editor.varInsn(Opcodes.ALOAD, 5);
 				editor.varInsn(Opcodes.ALOAD, 6);
-				if (editor.getManager().getCurrentVersion().equals("1.7.10")) {
-					editor.varInsn(Opcodes.ALOAD, 7);
-				}
-				editor.methodInsn(Opcodes.INVOKESPECIAL, "Block", "Block/addCollisionBoxesToList",
-						"(LWorld;LBlockPos;LIBlockState;LAxisAlignedBB;LList;LEntity;)V");
+				editor.methodInsn(Opcodes.INVOKESPECIAL, "Block", "Block/addCollisionBoxToList",
+						"(LIBlockState;LWorld;LBlockPos;LAxisAlignedBB;LList;LEntity;)V");
 
 				editor.labelInsn(lbl1);
 				editor.insn(Opcodes.RETURN);
