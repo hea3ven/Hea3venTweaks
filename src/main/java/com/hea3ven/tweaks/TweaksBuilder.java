@@ -2,13 +2,13 @@ package com.hea3ven.tweaks;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 
-import com.hea3ven.tools.asmtweaks.ASMTweaksManagerBuilder;
+import com.hea3ven.tools.asmtweaks.ASMTweaksBuilder;
 
 public class TweaksBuilder {
 
 	public static IClassTransformer build() {
-		return new ASMTweaksManagerBuilder().loadMappings("/mappings")
-
+		return ASMTweaksBuilder.create()
+				.loadMappings("/mappings/%s.mappings")
 				.addFldSrg("net/minecraft/world/World/worldInfo", "net/minecraft/world/World/field_72986_A")
 				.addMthdSrg("net/minecraft/world/storage/WorldInfo/getWorldTime",
 						"net/minecraft/world/storage/WorldInfo/func_76073_f", "()J")
@@ -29,7 +29,6 @@ public class TweaksBuilder {
 				.addMthdSrg("net/minecraft/block/Block/addCollisionBoxToList",
 						"net/minecraft/block/Block/func_185477_a",
 						"(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/AxisAlignedBB;Ljava/util/List;Lnet/minecraft/entity/Entity;)V")
-//				.addTweak(new RuntimeObfuscation(new String[] {"com/hea3ven/tweaks/DayNightCycleFunctions"}))
 				.addTweak(new NonSolidLeaves())
 				.addTweak(new DayNightCycle())
 				.build();

@@ -42,6 +42,8 @@ public class Hea3venTweaks implements ITweaker, IClassTransformer {
 	}
 
 	public static void setConfig(String name, String value) {
-		((com.hea3ven.tools.asmtweaks.ASMTweaksManager) asmTweaksManager).getConfig().setConfig(name, value);
+		((com.hea3ven.tools.asmtweaks.ASMTweaksRunner) asmTweaksManager).getManager()
+				.getConfig()
+				.setConfig(name, value);
 	}
 }
