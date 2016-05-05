@@ -15,8 +15,8 @@ version = "1.0.3"
 group = "com.hea3ven.tweaks"
 archivesBaseName = "hea3ven-tweaks"
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 configurations {
     release
