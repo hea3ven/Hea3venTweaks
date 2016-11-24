@@ -12,6 +12,7 @@ import com.hea3ven.tools.asmtweaks.editors.LabelRef;
 import com.hea3ven.tools.asmtweaks.editors.MethodEditor;
 import com.hea3ven.tools.asmtweaks.editors.opcodes.*;
 import com.hea3ven.tools.asmtweaks.tweaks.ASMClassModAddMethod;
+import com.hea3ven.tools.asmtweaks.tweaks.ASMMethodModEditCode;
 
 public class NonSolidLeaves implements ASMTweak {
 
@@ -67,6 +68,44 @@ public class NonSolidLeaves implements ASMTweak {
 
 						.label(lbl1)
 						.insn(InsnOpcodes.RETURN));
+			}
+		});
+		modifications.add(new ASMMethodModEditCode("net/minecraft/block/BlockLeaves.isOpaqueCube",
+				"(Lnet/minecraft/block/state/IBlockState;)Z") {
+			@Override
+			protected void handle(MethodEditor editor) {
+				// > public boolean isOpaqueCube(IBlockState state)
+				// > {
+				// -	return !this.leavesFancy;
+				// + 	return false;
+				// > }
+
+				editor.Seek(7);
+				LabelRef lbl1 = editor.getLabel();
+				editor.Seek(3);
+				LabelRef lbl2 = editor.getLabel();
+				ASMContext ctx = new ASMContext();
+				ctx.addImport("net/minecraft/block/BlockLeaves");
+
+				editor.Seek(-8);
+				editor.setRemoveExactMode();
+				editor.apply(editor.newInstructionBuilder(ctx)
+						.varInsn(VarInsnOpcodes.ALOAD, 0)
+						.fieldInsn(FieldInsnOpcodes.GETFIELD, "BlockLeaves", "BlockLeaves.leavesFancy", "Z")
+						.jumpInsn(JumpInsnOpcodes.IFNE, lbl1)
+						.insn(InsnOpcodes.ICONST_1)
+						.jumpInsn(JumpInsnOpcodes.GOTO, lbl2)
+						.label(lbl1)
+						.frame(3, 0, null, 0, null)
+						.insn(InsnOpcodes.ICONST_0)
+						.label(lbl2)
+						.frame(4, 0, null, 1, new Object[] {"1"})
+						.insn(InsnOpcodes.IRETURN));
+
+				editor.setInsertMode();
+				editor.apply(editor.newInstructionBuilder(ctx)
+						.insn(InsnOpcodes.ICONST_0)
+						.insn(InsnOpcodes.IRETURN));
 			}
 		});
 	}
